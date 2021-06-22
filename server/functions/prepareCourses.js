@@ -6,7 +6,7 @@ const admin = require('firebase-admin');
 const { JSDOM } = require('jsdom');
 
 const qs = require('qs');
-const { NtlmClient } = require('axios-ntlm');
+const ntlm = require('request-ntlm-promise');
 const { USERNAME, PASSWORD } = require('./credentials.js');
 const { prepareCoursesSecret } = require('./secret.js');
 
@@ -31,15 +31,17 @@ function parse_getCourses(data) {
 const getCourses = () => {
     return new Promise(async (resolve, reject) => {
         try {
-            let client = NtlmClient({ username: USERNAME, password: PASSWORD });
-            let resp = await client({
+
+            let resp = await ntlm.get({
+                username: USERNAME,
+                password: PASSWORD,
                 url: "http://student.guc.edu.eg/External/LSI/EDUMS/CSMS/SearchAcademicScheduled_001.aspx",
-                method: "get"
             });
+
             if (resp == undefined) {
                 throw "getCourses, result is undefined";
             }
-            resolve(parse_getCourses(resp.data));
+            resolve(parse_getCourses(resp));
             return;
         } catch (error) {
             reject(error)
