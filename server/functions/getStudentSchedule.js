@@ -13,7 +13,7 @@ const runtimeOpts_get_student_schedule = {
     memory: '256MB'
 }
 
-function getParseCS(ini) {
+const getParseCS = (ini) => {
     let ret = {};
     for (let i = 0; i < ini.length; i += 1) {
         for (let j = 0; j < ini[i].ret.length; j += 1) {
@@ -35,7 +35,7 @@ function getParseCS(ini) {
     return ret;
 }
 
-function parse_getCourseSchedule(data) {
+const parse_getCourseSchedule = (data) => {
 
     var doc = (new JSDOM(data)).window.document;
     let ret = Array.from(doc.querySelector("#schedule").firstElementChild.children).slice(1).map(row => {
@@ -126,7 +126,7 @@ const getCourseSchedule = async (course_code, e_group) => {
     return data;
 }
 
-function parse_getStudentDataReport(data) {
+const parse_getStudentDataReport = (data) => {
     var doc = (new JSDOM(data)).window.document;
 
     if (doc.querySelector("#L_Info1").textContent.trim()) {

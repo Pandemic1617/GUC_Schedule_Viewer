@@ -11,7 +11,7 @@ const { USERNAME, PASSWORD } = require('./credentials.js');
 const { prepareCoursesSecret } = require('./secret.js');
 
 
-function parse_getCourses(data) {
+const parse_getCourses = (data) => {
     var doc = (new JSDOM(data)).window.document;
 
     var event_validation = doc.querySelector("#__EVENTVALIDATION").value;
