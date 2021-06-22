@@ -168,6 +168,8 @@ function parse_getStudentDataReport(data) {
 
 const getStudentDataReport = async (id) => {
     return new Promise(async (resolve, reject) => {
+        if (!(/\d{1,2}-\d{4,5}/.test(id))) throw "invalid id";
+
         let retries = 0;
         while (true) {
             try {
@@ -197,7 +199,6 @@ const getStudentDataReport = async (id) => {
 
 exports.get_student_schedule = functions.region('europe-west1').runWith(runtimeOpts_get_student_schedule).https.onRequest(async (req, res) => {
     let id = req.query.id;
-    if (!(/\d{1,2}-\d{4,5}/.test(id))) res.send({ status: "error", error: "invalid id" });
     let student_data;
 
     try {
