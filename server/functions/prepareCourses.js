@@ -37,8 +37,7 @@ const getCourses = () => {
                 method: "get"
             });
             if (resp == undefined) {
-                reject("getCourses, result is undefined");
-                return;
+                throw "getCourses, result is undefined";
             }
             resolve(parse_getCourses(resp.data));
             return;

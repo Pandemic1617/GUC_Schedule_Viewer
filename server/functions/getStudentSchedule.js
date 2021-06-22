@@ -73,8 +73,7 @@ const downloadCourseScheduleHelper = (id, oview_state, oevent_validation) => {
 
 
                 if (resp == undefined) {
-                    reject("getCourseSchedule, result is undefined");
-                    return;
+                    throw "getCourseSchedule, result is undefined";
                 }
                 resolve(getParseCS(parse_getCourseSchedule(resp.data)));
                 return;
