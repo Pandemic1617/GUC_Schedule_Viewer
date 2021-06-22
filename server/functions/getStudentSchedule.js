@@ -3,15 +3,14 @@ const admin = require('firebase-admin');
 
 const { JSDOM } = require('jsdom');
 const qs = require('qs');
-const { NtlmClient } = require('axios-ntlm');
 const { USERNAME, PASSWORD } = require('./credentials.js');
 const ntlm = require('request-ntlm-promise');
 
 const max_retries = 4;
 
 const runtimeOpts_get_student_schedule = {
-    timeoutSeconds: 540,
-    memory: '1GB'
+    timeoutSeconds: 120,
+    memory: '256MB'
 }
 
 function getParseCS(ini) {
@@ -59,25 +58,24 @@ const downloadCourseScheduleHelper = (id, oview_state, oevent_validation) => {
         let retries = 0;
         while (true) {
             try {
-                let client = NtlmClient({ username: USERNAME, password: PASSWORD });
-
                 const form_data = qs.stringify({ '__VIEWSTATE': oview_state, '__EVENTVALIDATION': oevent_validation, 'course[]': id });
 
-                let resp = await
-                    client({
-                        url: "http://student.guc.edu.eg/External/LSI/EDUMS/CSMS/SearchAcademicScheduled_001.aspx",
-                        method: "post",
-                        headers: { "Content-Type": "application/x-www-form-urlencoded", },
-                        data: form_data,
-                    });
+                let resp = await ntlm.post({
+                    username: USERNAME,
+                    password: PASSWORD,
+                    url: "http://student.guc.edu.eg/External/LSI/EDUMS/CSMS/SearchAcademicScheduled_001.aspx",
+                    headers: { "Content-Type": "application/x-www-form-urlencoded", },
+                    body: form_data,
+                });
 
 
                 if (resp == undefined) {
                     throw "getCourseSchedule, result is undefined";
                 }
-                resolve(getParseCS(parse_getCourseSchedule(resp.data)));
+                resolve(getParseCS(parse_getCourseSchedule(resp)));
                 return;
             } catch (error) {
+                console.log(`getCourseSchedule, try: ${retries}, error: ${error.toString()}`);
                 retries += 1;
                 if (retries <= max_retries) continue;
                 reject(error)
