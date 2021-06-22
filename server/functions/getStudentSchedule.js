@@ -53,39 +53,36 @@ const parse_getCourseSchedule = (data) => {
 
 
 
-const downloadCourseScheduleHelper = (id, oview_state, oevent_validation) => {
-    return new Promise(async (resolve, reject) => {
-        let retries = 0;
-        while (true) {
-            try {
-                const form_data = qs.stringify({ '__VIEWSTATE': oview_state, '__EVENTVALIDATION': oevent_validation, 'course[]': id });
+const downloadCourseScheduleHelper = async (id, oview_state, oevent_validation) => {
+    let retries = 0;
+    while (true) {
+        try {
+            const form_data = qs.stringify({ '__VIEWSTATE': oview_state, '__EVENTVALIDATION': oevent_validation, 'course[]': id });
 
-                let resp = await ntlm.post({
-                    username: USERNAME,
-                    password: PASSWORD,
-                    url: "http://student.guc.edu.eg/External/LSI/EDUMS/CSMS/SearchAcademicScheduled_001.aspx",
-                    headers: { "Content-Type": "application/x-www-form-urlencoded", },
-                    body: form_data,
-                });
+            let resp = await ntlm.post({
+                username: USERNAME,
+                password: PASSWORD,
+                url: "http://student.guc.edu.eg/External/LSI/EDUMS/CSMS/SearchAcademicScheduled_001.aspx",
+                headers: { "Content-Type": "application/x-www-form-urlencoded", },
+                body: form_data,
+            });
 
 
-                if (resp == undefined) {
-                    throw "getCourseSchedule, result is undefined";
-                }
-                resolve(getParseCS(parse_getCourseSchedule(resp)));
-                return;
-            } catch (error) {
-                console.log(`getCourseSchedule, try: ${retries}, error: ${error.toString()}`);
-                retries += 1;
-                if (retries <= max_retries) continue;
-                reject(error)
-                return;
+            if (resp == undefined) {
+                throw "getCourseSchedule, result is undefined";
             }
-        }
-        // var event_validation = doc.querySelector("#__EVENTVALIDATION").value;
-        // var view_state = doc.querySelector("#__VIEWSTATE").value;
 
-    });
+            return getParseCS(parse_getCourseSchedule(resp));
+
+        } catch (error) {
+            console.log(`getCourseSchedule, try: ${retries}, error: ${error.toString()}`);
+            retries += 1;
+            if (retries <= max_retries) continue;
+            throw error
+        }
+    }
+    // var event_validation = doc.querySelector("#__EVENTVALIDATION").value;
+    // var view_state = doc.querySelector("#__VIEWSTATE").value;
 }
 
 const downloadCourseSchedule = async (course) => {
@@ -165,36 +162,32 @@ const parse_getStudentDataReport = (data) => {
 }
 
 const getStudentDataReport = async (id) => {
-    return new Promise(async (resolve, reject) => {
 
-        if (!(/\d{1,2}-\d{4,5}/.test(id))) throw "invalid id";
+    if (!(/\d{1,2}-\d{4,5}/.test(id))) throw "invalid id";
 
-        let retries = 0;
-        while (true) {
-            try {
+    let retries = 0;
+    while (true) {
+        try {
 
-                let resp = await ntlm.get({
-                    username: USERNAME,
-                    password: PASSWORD,
-                    url: "http://student.guc.edu.eg/External/Student/CourseGroup/StudentDataReport.aspx",
-                    qs: { "StudentAppNo": id }
-                });
+            let resp = await ntlm.get({
+                username: USERNAME,
+                password: PASSWORD,
+                url: "http://student.guc.edu.eg/External/Student/CourseGroup/StudentDataReport.aspx",
+                qs: { "StudentAppNo": id }
+            });
 
-                if (resp == undefined) {
-                    throw "getStudentDataReport, result is undefined";
-                }
-
-                resolve(parse_getStudentDataReport(resp));
-                return;
-            } catch (error) {
-                console.log(`getStudentDataReport, try: ${retries}, error: ${error.toString()}`);
-                retries += 1;
-                if (retries <= max_retries) continue;
-                reject(error)
-                return;
+            if (resp == undefined) {
+                throw "getStudentDataReport, result is undefined";
             }
+
+            return parse_getStudentDataReport(resp);
+        } catch (error) {
+            console.log(`getStudentDataReport, try: ${retries}, error: ${error.toString()}`);
+            retries += 1;
+            if (retries <= max_retries) continue;
+            throw error;
         }
-    })
+    }
 }
 
 exports.get_student_schedule = functions.region('europe-west1').runWith(runtimeOpts_get_student_schedule).https.onRequest(async (req, res) => {

@@ -28,25 +28,23 @@ const parse_getCourses = (data) => {
     return { courses_list, view_state, event_validation };
 }
 
-const getCourses = () => {
-    return new Promise(async (resolve, reject) => {
-        try {
+const getCourses = async () => {
+    try {
 
-            let resp = await ntlm.get({
-                username: USERNAME,
-                password: PASSWORD,
-                url: "http://student.guc.edu.eg/External/LSI/EDUMS/CSMS/SearchAcademicScheduled_001.aspx",
-            });
+        let resp = await ntlm.get({
+            username: USERNAME,
+            password: PASSWORD,
+            url: "http://student.guc.edu.eg/External/LSI/EDUMS/CSMS/SearchAcademicScheduled_001.aspx",
+        });
 
-            if (resp == undefined) {
-                throw "getCourses, result is undefined";
-            }
-            resolve(parse_getCourses(resp));
-            return;
-        } catch (error) {
-            reject(error)
+        if (resp == undefined) {
+            throw "getCourses, result is undefined";
         }
-    });
+        return parse_getCourses(resp);
+    } catch (error) {
+        throw error
+    }
+
 }
 
 const runtimeOpts_perpare_courses = {
