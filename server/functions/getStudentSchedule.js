@@ -5,7 +5,7 @@ const { JSDOM } = require('jsdom');
 const qs = require('qs');
 const { NtlmClient } = require('axios-ntlm');
 const { USERNAME, PASSWORD } = require('./credentials.js');
-
+const ntlm = require('request-ntlm-promise');
 
 const max_retries = 4;
 
@@ -168,26 +168,28 @@ function parse_getStudentDataReport(data) {
 
 const getStudentDataReport = async (id) => {
     return new Promise(async (resolve, reject) => {
+
         if (!(/\d{1,2}-\d{4,5}/.test(id))) throw "invalid id";
 
         let retries = 0;
         while (true) {
             try {
-                let client = NtlmClient({ username: USERNAME, password: PASSWORD });
 
-                let resp = await client({
+                let resp = await ntlm.get({
+                    username: USERNAME,
+                    password: PASSWORD,
                     url: "http://student.guc.edu.eg/External/Student/CourseGroup/StudentDataReport.aspx",
-                    method: "get",
-                    params: { "StudentAppNo": id },
+                    qs: { "StudentAppNo": id }
                 });
 
                 if (resp == undefined) {
-                    reject("getStudentDataReport, result is undefined");
-                    return;
+                    throw "getStudentDataReport, result is undefined";
                 }
-                resolve(parse_getStudentDataReport(resp.data));
+
+                resolve(parse_getStudentDataReport(resp));
                 return;
             } catch (error) {
+                console.log(`getStudentDataReport, try: ${retries}, error: ${error.toString()}`);
                 retries += 1;
                 if (retries <= max_retries) continue;
                 reject(error)
