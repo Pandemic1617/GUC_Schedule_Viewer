@@ -10,7 +10,7 @@ const max_retries = 4;
 
 const runtimeOpts_get_student_schedule = {
     timeoutSeconds: 120,
-    memory: '256MB'
+    memory: '1GB'
 }
 
 const getParseCS = (ini) => {
