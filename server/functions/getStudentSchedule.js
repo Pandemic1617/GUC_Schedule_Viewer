@@ -191,6 +191,20 @@ const getStudentDataReport = async (id) => {
 }
 
 exports.get_student_schedule = functions.region('europe-west1').runWith(runtimeOpts_get_student_schedule).https.onRequest(async (req, res) => {
+
+    // TODO add request details logging
+
+    // handle CORS
+    res.set('Access-Control-Allow-Origin', '*');
+    if (req.method === 'OPTIONS') {
+        // Send response to OPTIONS requests
+        res.set('Access-Control-Allow-Methods', 'GET');
+        res.set('Access-Control-Allow-Headers', 'Content-Type');
+        res.set('Access-Control-Max-Age', '3600');
+        res.status(204).send('');
+        return;
+    }
+
     let id = req.query.id;
     let student_data;
 
