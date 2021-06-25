@@ -1,6 +1,7 @@
 // import logo from './logo.svg';
-// import './App.css';
+import './CellView.css';
 import React from 'react';
+import SessionView from './SessionView';
 
 class CellView extends React.Component {
 
@@ -15,15 +16,17 @@ class CellView extends React.Component {
   render() {
     return (
       <div className="CellView">
-        <table id="cell">
-           
+        {/* <table id="cell"> */}
+        <div id="cell">
+
           {this.state.ini.map((e, i) => {
-            return (e.course_code) // make subcomponent for each session
+            return (<div> <SessionView data={e} /></div>) // make subcomponent for each session
           }
           )
           }
 
-        </table>
+          {/* </table> */}
+        </div>
       </div>
     );
   }

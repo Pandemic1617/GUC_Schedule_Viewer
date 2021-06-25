@@ -1,0 +1,20 @@
+#location {
+  color: grey;
+  font-size: 80%;
+}
+#course {
+  font-size: 150%;
+  stroke: black;
+  -webkit-text-stroke: 0.2px;
+}
+#staff {
+  font-size: 80%;
+}
+
+#group {
+    margin: 0;
+}
+
+.sessioncontainer {
+  margin: 10px;
+}

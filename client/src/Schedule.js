@@ -1,5 +1,5 @@
 // import logo from './logo.svg';
-// import './App.css';
+import './Schedule.css';
 import React from 'react';
 import CellView from './CellView';
 
@@ -54,7 +54,6 @@ class Schedule extends React.Component {
     return (
       <div className="SchedView">
         <table id="sched">
-          <h1> hi from SchedView</h1>
           <tr><th> idk</th> <th>1st</th>   <th>2nd</th> <th> 3rd</th> <th>4th</th> <th>5th</th></tr>
           {this.state.sched.map((e, i) => {
             return (
