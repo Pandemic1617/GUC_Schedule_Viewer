@@ -5,6 +5,11 @@ import axios from 'axios';
 
 import Schedule from './Schedule';
 
+import Swal from 'sweetalert2'
+import withReactContent from 'sweetalert2-react-content'
+
+const MySwal = withReactContent(Swal)
+
 class App extends React.Component {
 
   constructor(props) {
@@ -12,20 +17,39 @@ class App extends React.Component {
     super(props);
     this.state = {
       sched: [],
-      id: '',
-      alert: {
-        type: '',
-        text: '',
-        show: false
-      }
+      id: ''
     };
 
+    this.checkDisclaimer();
+
   }
-  // stuff = () => { let a = this.state.counter; a.push(1); this.setState({ counter: a }); }
-  stuff = () => { this.state.counter.push(1); }
+
+  checkDisclaimer = () => {
+    const current_version = 1;
+    if (localStorage.getItem('disclaimer_seen') && localStorage.getItem('disclaimer_seen') > 0) return;
+    MySwal.fire({ title: 'Disclaimer', text: disclaimer_text, backdrop: true, allowOutsideClick: (() => false) })
+      .then(e => { if (e.isConfirmed) localStorage.setItem('disclaimer_seen', current_version) });
+
+    return;
+  }
+
+  onGetClick = async () => {
+    let a = document.querySelector("#get");
+    if (a.disabled === true) return;
+    a.disabled = true;
+    console.log("disabled a");
+    this.getSchedule().then((e) => { a.disabled = false; })
+  }
 
   getSchedule = async () => {
-    console.debug("making request", this.state.id);
+
+    // console.debug("making request", this.state.id);
+    if (!(/\d{1,2}-\d{4,5}/.test(this.state.id))) {
+      this.onShowAlert('Error', 'invalid id provided');
+      return;
+    };
+
+
     let a;
     try {
       a = await axios.get("https://europe-west1-gucschedule.cloudfunctions.net/get_student_schedule",
@@ -61,39 +85,27 @@ class App extends React.Component {
   }
 
 
-  setAlert = (a) => { this.setState({ alert: a }) }
 
-  onCloseAlert = () => {
-    this.setAlert({
-      type: '',
-      text: '',
-      show: false
-    })
-  }
+
 
   onShowAlert = (type, info = '') => {
-    this.setAlert({
-      type: type,
-      text: info,
-      show: true
-    })
+    MySwal.fire(type, info);
   }
 
 
   render() {
     return (
       <div className="App">
-        <input type="text" onChange={this.updateID} ></input>
-        <button onClick={this.getSchedule}> b</button>
+        <div id="name"> GUC Schedule Viewer</div>
+        <input id="id" type="text" placeholder="Enter GUC ID" onChange={this.updateID} ></input><br></br>
+        <button id="get" onClick={this.onGetClick}> Load Schedule</button>
         <Schedule schedule={this.state.sched} key={this.state.sched} />
-        <div style={{ display: this.state.alert.show ? "" : "none" }}>
-          {this.state.alert.text}
-          {this.state.alert.type}
-          <button onClick={this.onCloseAlert}> close</button>
-        </div>
       </div>
     );
   }
 }
 
 export default App;
+
+
+const disclaimer_text = "This app comes with absolutely no warranties or guarantees. You are solely responsible for the use of this app and should only use it on people who have given you permission. This app merely uses information available to any GUC student through the admin system. This is an app made by a GUC student and is in no way endorsed by the GUC."

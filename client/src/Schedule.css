@@ -12,9 +12,12 @@ th {
 
 table {
   border-collapse: collapse;
+  max-width: 100vw;
 }
 
 .SchedView {
   /* margin-top: 10vmin; */
-  margin-top: 5vmin;
+  margin: 5vmin;
+  max-width: 100vw;
+  overflow-x: auto;
 }
