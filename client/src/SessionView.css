@@ -1,16 +1,16 @@
 #location {
-  color: grey;
+  /* color: grey; */
   font-size: smaller;
 }
 #course {
   font-size: larger;
-  stroke: black;
+  /* stroke: black; */
   -webkit-text-stroke: 0.2px;
 }
 #staff {
   font-size: small;
   font-weight: 700;
-  color: grey;
+  /* color: grey; */
 }
 
 #group {
@@ -20,16 +20,17 @@
 
 .sessioncontainer {
   margin: 1vmin;
+  /* background-color:#A1C435; */
 }
 
-/* .Lecture{
-    opacity: 80%;
+.Lecture {
+  color: #6f5060;
 }
 
-.Tutorial{
-color: rgb(7, 90, 14);
+.Tutorial {
+  color: #a78682;
 }
 
-.Practical{
-color:rgb(41, 0, 75);
-} */
+.Practical {
+  color: #a09ebb;
+}
