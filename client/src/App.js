@@ -57,13 +57,13 @@ class App extends React.Component {
 
 
     } catch (e) {
-      this.onShowAlert('error while making request');
+      this.onShowAlert('error while making request',e.toString());
 
       return;
     }
 
     if (a.data.status !== 'ok') {
-      this.onShowAlert('Fatal Error while getting data', a.data.error);
+      this.onShowAlert(a.data.status, a.data.error);
 
       return;
     }

@@ -4,6 +4,10 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
+import { initializeAnalytics } from './analytics';
+
+initializeAnalytics();
+
 ReactDOM.render(
   <React.StrictMode>
     <App />
