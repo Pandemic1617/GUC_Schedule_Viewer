@@ -27,7 +27,7 @@ class App extends React.Component {
   checkDisclaimer = () => {
     const current_version = 1;
     if (localStorage.getItem('disclaimer_seen') && localStorage.getItem('disclaimer_seen') > 0) return;
-    MySwal.fire({ title: 'Disclaimer', text: disclaimer_text, backdrop: true, allowOutsideClick: (() => false) })
+    this.onShowAlert('Disclaimer', disclaimer_text, { backdrop: true, allowOutsideClick: (() => false) })
       .then(e => { if (e.isConfirmed) localStorage.setItem('disclaimer_seen', current_version) });
 
     return;
@@ -88,8 +88,11 @@ class App extends React.Component {
 
 
 
-  onShowAlert = (type, info = '') => {
-    MySwal.fire(type, info);
+  onShowAlert = (type, info = '', obj = {}) => {
+    return MySwal.fire({
+      title: '<span style="color:var(--color3)">' + type + '</span>', html: '<span style="color:var(--color2)">' + info + '</span>',
+      background: "var(--background)", confirmButtonColor: "var(--color3)", ...obj
+    });
   }
 
 
