@@ -1,26 +1,22 @@
 #location {
-  /* color: grey; */
-  font-size: smaller;
+    font-size: smaller;
 }
 #course {
-  font-size: larger;
-  /* stroke: black; */
-  -webkit-text-stroke: 0.2px;
+    font-size: larger;
+    -webkit-text-stroke: 0.2px;
 }
 #staff {
-  font-size: small;
-  font-weight: 700;
-  /* color: grey; */
+    font-size: small;
+    font-weight: 700;
 }
 
 #group {
-  font-size: medium;
-  margin: 0;
+    font-size: medium;
+    margin: 0;
 }
 
 .sessioncontainer {
-  margin: 1vmin;
-  /* background-color:#A1C435; */
+    margin: 1vmin;
 }
 /* 
 .Lecture {

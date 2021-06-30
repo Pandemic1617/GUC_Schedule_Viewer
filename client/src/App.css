@@ -1,45 +1,45 @@
 .App {
-  text-align: center;
+    text-align: center;
 }
 
 #id {
-  color: var(--color2);
-  border: 1.8px solid var(--color3);
-  border-radius: 3px;
-  min-width: 60vw;
-  text-align: center;
-  min-height: 5vh;
-  margin-top: 20px;
-  box-sizing: border-box;
-  font-size: larger;
-  background-color: var(--color1);
-  padding: 20px 20px;
-  outline: none;
+    color: var(--color2);
+    border: 1.8px solid var(--color3);
+    border-radius: 3px;
+    min-width: 60vw;
+    text-align: center;
+    min-height: 5vh;
+    margin-top: 20px;
+    box-sizing: border-box;
+    font-size: larger;
+    background-color: var(--color1);
+    padding: 20px 20px;
+    outline: none;
 }
 
 #id::placeholder {
-  color: var(--color2);
+    color: var(--color2);
 }
 
 #get {
-  background-color: var(--color2);
-  border: none;
-  color: var(--color1);
-  padding: 15px 32px;
-  font-size: 16px;
-  border-radius: 15px;
-  margin: 20px;
-  font-weight: 500;
+    background-color: var(--color2);
+    border: none;
+    color: var(--color1);
+    padding: 15px 32px;
+    font-size: 16px;
+    border-radius: 15px;
+    margin: 20px;
+    font-weight: 500;
 }
 
 #get:disabled {
-  color: var(--color3);
-  background-color: var(--color1);
+    color: var(--color3);
+    background-color: var(--color1);
 }
 
 #name {
-  font-size: xxx-large;
-  font-weight: 200;
-  padding: 30px;
-  color: var(--color3);
+    font-size: xxx-large;
+    font-weight: 200;
+    padding: 30px;
+    color: var(--color3);
 }
