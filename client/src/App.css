@@ -3,16 +3,16 @@
 }
 
 #id {
-    color: var(--color2);
-    border: 1.8px solid var(--color3);
+    color: var(--background);
+    border: 1.8px solid var(--color2);
     border-radius: 3px;
-    min-width: 60vw;
+    min-width: 40vw;
     text-align: center;
     min-height: 5vh;
     margin-top: 20px;
     box-sizing: border-box;
     font-size: larger;
-    background-color: var(--color1);
+    background-color: var(--color3);
     padding: 20px 20px;
     outline: none;
 }
@@ -24,7 +24,7 @@
 #get {
     background-color: var(--color2);
     border: none;
-    color: var(--color1);
+    color: var(--background);
     padding: 15px 32px;
     font-size: 16px;
     border-radius: 15px;
@@ -33,8 +33,7 @@
 }
 
 #get:disabled {
-    color: var(--color3);
-    background-color: var(--color1);
+    background-color: var(--color3);
 }
 
 #name {
