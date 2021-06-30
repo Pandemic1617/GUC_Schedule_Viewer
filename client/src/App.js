@@ -51,7 +51,7 @@ class App extends React.Component {
     };
 
     getSchedule = async () => {
-        if (!/\d{1,2}-\d{4,5}/.test(this.state.id)) {
+        if (!/^\d{1,2}-\d{4,5}$/.test(this.state.id)) {
             this.onShowAlert("Error", "invalid id provided");
             return;
         }
@@ -98,7 +98,6 @@ class App extends React.Component {
                 <input id="id" type="text" placeholder="Enter GUC ID" onChange={this.updateID}></input>
                 <br></br>
                 <button id="get" onClick={this.onGetClick}>
-                    {" "}
                     Load Schedule
                 </button>
                 <Schedule schedule={this.state.sched} key={this.state.sched} />
