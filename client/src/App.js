@@ -28,12 +28,7 @@ class App extends React.Component {
     checkDisclaimer = () => {
         if (localStorage.getItem("disclaimer_seen") >= current_disclaimer_version) return;
 
-        MySwal.fire({
-            title: "Disclaimer",
-            text: disclaimer_text,
-            backdrop: true,
-            allowOutsideClick: () => false,
-        }).then((e) => {
+        this.onShowAlert("Disclaimer", disclaimer_text, { backdrop: true, allowOutsideClick: () => false }).then((e) => {
             if (e.isConfirmed) localStorage.setItem("disclaimer_seen", current_disclaimer_version);
         });
 
