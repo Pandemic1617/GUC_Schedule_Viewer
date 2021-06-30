@@ -10,9 +10,6 @@ var firebaseConfig = {
     measurementId: "G-LB7NRX352B",
 };
 
-let analytics;
-let initializeAnalytics = () => {
-    analytics = firebase.initializeApp(firebaseConfig).analytics();
-};
+const analytics = firebase.initializeApp(firebaseConfig).analytics();
 
-export { analytics, initializeAnalytics };
+export { analytics };

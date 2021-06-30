@@ -49,23 +49,21 @@ class Schedule extends React.Component {
         return (
             <div className="SchedView">
                 <table id="sched">
-                    <tr>
-                        <th> idk</th> <th>1st</th> <th>2nd</th> <th> 3rd</th> <th>4th</th> <th>5th</th>
-                    </tr>
-                    {this.state.sched.map((e, i) => {
-                        return (
-                            <tr>
-                                <th>{this.days[i]}</th>
-                                {e.map((v) => {
-                                    return (
-                                        <th>
-                                            <CellView ini={v} />
-                                        </th>
-                                    );
-                                })}
-                            </tr>
-                        );
-                    })}
+                    <tbody>
+                        <tr>
+                            <th>idk</th><th>1st</th><th>2nd</th><th>3rd</th><th>4th</th><th>5th</th>
+                        </tr>
+                        {this.state.sched.map((e, i) => {
+                            return (
+                                <tr key={this.days[i]}>
+                                    <th>{this.days[i]}</th>
+                                    {e.map((v, i) => {
+                                        return (<th key={i}><CellView ini={v} /></th>);
+                                    })}
+                                </tr>
+                            );
+                        })}
+                    </tbody>
                 </table>
             </div>
         );
