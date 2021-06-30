@@ -15,7 +15,7 @@ class CellView extends React.Component {
                 <div id="cell">
                     {this.state.ini.map((e, i) => {
                         return (
-                            <div>
+                            <div key={e.toString() + i.toString()}>
                                 <SessionView data={e} />
                             </div>
                         );
