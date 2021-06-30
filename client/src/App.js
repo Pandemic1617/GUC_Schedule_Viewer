@@ -85,7 +85,7 @@ class App extends React.Component {
     onShowAlert = (type, info = "", obj = {}) => {
         return MySwal.fire({
             title: '<span style="color:var(--color3)">' + type + "</span>",
-            html: '<span style="color:var(--color2)">' + info + "</span>",
+            html: '<span style="color:var(--text-color)">' + info + "</span>",
             background: "var(--background)",
             confirmButtonColor: "var(--color3)",
             ...obj,
