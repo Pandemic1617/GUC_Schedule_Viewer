@@ -1,37 +1,45 @@
 .App {
-  text-align: center;
+    text-align: center;
 }
 
 #id {
-  color: rgb(0, 0, 0);
-  border: 1.8px solid rgb(29, 29, 29);
-  border-radius: 3px;
-  min-width: 60vw;
-  text-align: center;
-  min-height: 5vh;
-  margin-top: 20px;
-  box-sizing: border-box;
-  font-size: larger;
-  /* padding: 3vmin 10vmin; */
+    color: var(--color2);
+    border: 1.8px solid var(--color3);
+    border-radius: 3px;
+    min-width: 60vw;
+    text-align: center;
+    min-height: 5vh;
+    margin-top: 20px;
+    box-sizing: border-box;
+    font-size: larger;
+    background-color: var(--color1);
+    padding: 20px 20px;
+    outline: none;
+}
+
+#id::placeholder {
+    color: var(--color2);
 }
 
 #get {
-  background-color: #4caf50; /* Green */
-  border: none;
-  color: white;
-  padding: 15px 32px;
-  font-size: 16px;
-  border-radius: 15px;
-  margin: 20px;
+    background-color: var(--color2);
+    border: none;
+    color: var(--color1);
+    padding: 15px 32px;
+    font-size: 16px;
+    border-radius: 15px;
+    margin: 20px;
+    font-weight: 500;
 }
 
-#get:disabled{
-  background-color: #6e6e6e; 
-  color:#b3b3b3;
+#get:disabled {
+    color: var(--color3);
+    background-color: var(--color1);
 }
 
 #name {
-  font-size: xx-large;
-  font-weight: 200;
-  margin: 30px;
+    font-size: xxx-large;
+    font-weight: 200;
+    padding: 30px;
+    color: var(--color3);
 }
