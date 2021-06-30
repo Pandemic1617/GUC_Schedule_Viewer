@@ -3,8 +3,8 @@
 }
 
 #id {
-  color: #7ace9d;
-  border: 1.8px solid #377670;
+  color: var(--color2);
+  border: 1.8px solid var(--color3);
   border-radius: 3px;
   min-width: 60vw;
   text-align: center;
@@ -12,33 +12,34 @@
   margin-top: 20px;
   box-sizing: border-box;
   font-size: larger;
-  background-color: #353943;
-  /* padding: 3vmin 10vmin; */
+  background-color: var(--color1);
+  padding: 20px 20px;
   outline: none;
 }
 
 #id::placeholder {
-  color: #7ace9d;
+  color: var(--color2);
 }
 
 #get {
-  background-color: #70c493;
+  background-color: var(--color2);
   border: none;
-  color: #353943;
+  color: var(--color1);
   padding: 15px 32px;
   font-size: 16px;
   border-radius: 15px;
   margin: 20px;
+  font-weight: 500;
 }
 
 #get:disabled {
-  background-color: #6e6e6e;
-  color: #b3b3b3;
+  color: var(--color3);
+  background-color: var(--color1);
 }
 
 #name {
   font-size: xxx-large;
   font-weight: 200;
   padding: 30px;
-  color: #3e8881;
+  color: var(--color3);
 }
