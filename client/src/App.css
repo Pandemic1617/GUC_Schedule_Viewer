@@ -3,7 +3,7 @@
 }
 
 #id {
-    color: var(--background);
+    color: var(--text-color);
     border: 1.8px solid var(--color2);
     border-radius: 3px;
     min-width: 40vw;
@@ -12,7 +12,7 @@
     margin-top: 20px;
     box-sizing: border-box;
     font-size: larger;
-    background-color: var(--color3);
+    background-color: var(--background);
     padding: 20px 20px;
     outline: none;
 }
