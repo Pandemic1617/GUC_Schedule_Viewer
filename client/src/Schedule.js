@@ -10,7 +10,6 @@ class Schedule extends React.Component {
         this.state = { sched: this.parseScheudle(props.schedule), org_schedule: props.schedule };
     }
     shouldComponentUpdate(nextProps) {
-        console.debug("shoudl update called");
         return nextProps.schedule !== this.state.org_schedule;
     }
 
@@ -35,12 +34,10 @@ class Schedule extends React.Component {
             }
         }
 
-        console.debug(out);
         let cnt = Array(7).fill(0);
         for (let i = 0; i < out.length; i++) for (let blah of out[i]) cnt[i] += blah.length;
 
         if (cnt[6] === 0) out.pop();
-        console.debug(cnt);
         console.debug(out);
         return out;
     }
