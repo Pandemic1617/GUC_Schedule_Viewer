@@ -5,7 +5,7 @@ import CellView from "./CellView";
 
 class Schedule extends React.Component {
     constructor(props) {
-        console.debug("in schedule constructor");
+        console.debug("Schedule constructo called");
         super(props);
         this.state = { sched: this.parseScheudle(props.schedule), org_schedule: props.schedule };
     }
@@ -38,7 +38,7 @@ class Schedule extends React.Component {
         for (let i = 0; i < out.length; i++) for (let blah of out[i]) cnt[i] += blah.length;
 
         if (cnt[6] === 0) out.pop();
-        console.debug(out);
+        console.debug("parseSchedule: ", out);
         return out;
     }
 

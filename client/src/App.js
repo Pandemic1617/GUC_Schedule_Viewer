@@ -50,7 +50,7 @@ class App extends React.Component {
     };
 
     getSchedule = async (id) => {
-        console.debug(id);
+        console.debug("getSchedule is call with " + id);
         if (!/^\d{1,2}-\d{4,5}$/.test(id)) {
             this.onShowAlert("Error", "invalid id provided");
             analytics.logEvent("Load Scheudle", { id, type: "Error", result: "invalid id provided (internal)" });
@@ -61,6 +61,7 @@ class App extends React.Component {
         try {
             a = await axios.get(API_URL, { params: { id } });
         } catch (e) {
+            console.error("exception in getScheudle " + e.toString());
             this.onShowAlert("Error while making request", e.toString());
             analytics.logEvent("Load Scheudle", { id, type: "Error while making request", result: e.toString() });
             return;
@@ -92,8 +93,9 @@ class App extends React.Component {
             console.log("set ready true");
         } else button.removeAttribute("ready");
     };
-    
+
     onShowAlert = (type, info = "", obj = {}) => {
+        console.debug("displayed alert");
         return MySwal.fire({
             title: '<span style="color:var(--color3)">' + escapeHTML(type) + "</span>",
             html: '<span style="color:var(--text-color)">' + escapeHTML(info) + "</span>",
