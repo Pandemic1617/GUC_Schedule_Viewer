@@ -8,6 +8,7 @@ import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 
 import { analytics } from './analytics.js';
+import { escapeHTML } from './utils.js';
 
 const MySwal = withReactContent(Swal);
 const current_disclaimer_version = 1;
@@ -84,8 +85,8 @@ class App extends React.Component {
     };
     onShowAlert = (type, info = "", obj = {}) => {
         return MySwal.fire({
-            title: '<span style="color:var(--color3)">' + type + "</span>",
-            html: '<span style="color:var(--text-color)">' + info + "</span>",
+            title: '<span style="color:var(--color3)">' + escapeHTML(type) + "</span>",
+            html: '<span style="color:var(--text-color)">' + escapeHTML(info) + "</span>",
             background: "var(--background)",
             confirmButtonColor: "var(--color3)",
             ...obj,
