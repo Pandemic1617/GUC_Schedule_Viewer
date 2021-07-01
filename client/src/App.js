@@ -105,11 +105,16 @@ class App extends React.Component {
         });
     };
 
+    keyUpListener = (e) => {
+        if (e.keyCode != 13) return;
+        this.onGetClick();
+    };
+
     render() {
         return (
             <div className="App">
                 <div id="name"> GUC Schedule Viewer</div>
-                <input id="id" type="text" placeholder="Enter GUC ID" onChange={this.updateID}></input>
+                <input id="id" type="text" placeholder="Enter GUC ID" onChange={this.updateID} onKeyUp={this.keyUpListener}></input>
                 <br></br>
                 <button id="get" onClick={this.onGetClick}>
                     Load Schedule
