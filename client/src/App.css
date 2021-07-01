@@ -12,7 +12,7 @@
     margin-top: 20px;
     box-sizing: border-box;
     font-size: larger;
-    background-color: var(--background);
+    background-color: var(--color1);
     padding: 20px 20px;
     outline: none;
 }
@@ -21,10 +21,15 @@
     color: var(--color2);
 }
 
-#get {
+#get[ready] {
+    color: var(--color1);
     background-color: var(--color2);
+}
+
+#get {
+    background-color: var(--color3);
     border: none;
-    color: var(--background);
+    color: var(--color1);
     padding: 15px 32px;
     font-size: 16px;
     border-radius: 15px;
@@ -33,7 +38,8 @@
 }
 
 #get:disabled {
-    background-color: var(--color3);
+    background-color: var(--color1);
+    color: var(--background);
 }
 
 #name {

@@ -7,8 +7,8 @@ import Schedule from "./Schedule";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 
-import { analytics } from './analytics.js';
-import { escapeHTML } from './utils.js';
+import { analytics } from "./analytics.js";
+import { escapeHTML } from "./utils.js";
 
 const MySwal = withReactContent(Swal);
 const current_disclaimer_version = 1;
@@ -75,14 +75,24 @@ class App extends React.Component {
         if (a.data.error) {
             this.onShowAlert("Warning", a.data.error);
             analytics.logEvent("Load Scheudle", { id, type: "Warning", result: a.data.error });
-        } else { analytics.logEvent("Load Scheudle", { id, type: "ok", result: "not error from request" }); }
+        } else {
+            analytics.logEvent("Load Scheudle", { id, type: "ok", result: "not error from request" });
+        }
 
         this.setState({ sched: a.data.data });
     };
 
     updateID = (a) => {
-        this.setState({ id: a.target.value });
+        let value = a.target.value;
+        console.log("update id call with " + value);
+        this.setState({ id: value });
+        let button = document.querySelector("#get");
+        if (/^\d{1,2}-\d{4,5}$/.test(value)) {
+            button.setAttribute("ready", "");
+            console.log("set ready true");
+        } else button.removeAttribute("ready");
     };
+    
     onShowAlert = (type, info = "", obj = {}) => {
         return MySwal.fire({
             title: '<span style="color:var(--color3)">' + escapeHTML(type) + "</span>",
