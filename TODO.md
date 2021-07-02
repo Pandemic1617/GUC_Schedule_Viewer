@@ -1,9 +1,10 @@
 # TODO
 
 ### Client
-- [ ] improve change theme design
+- [x] improve change theme design
 - [ ] test css for diffrent browsers (normalization)
 - [ ] organise files and remove unnecessary ones 
+- [ ] change alert button text color and background color
 
 ### Server
 - [ ] properly store credentials in enviroment variables
