@@ -17,10 +17,7 @@ const API_URL = "https://europe-west1-gucschedule.cloudfunctions.net/get_student
 const disclaimer_text =
     "This app comes with absolutely no warranties or guarantees. You are solely responsible for the use of this app and should only use it on people who have given you permission. This app merely uses information available to any GUC student through the admin system. This is an app made by a GUC student and is in no way endorsed by the GUC.";
 
-const themes = [
-    { "--background": "#001a23", "--color1": "#001015", "--color2": "#7ace9d", "--color3": "#3e8881", "--text-color": "#bbb5bd" },
-    { "--background": "#333", "--color1": "#000", "--color2": "#aaa", "--color3": "#555", "--text-color": "red" },
-];
+const themes = ['theme-dark', 'theme-light'];
 
 class App extends React.Component {
     constructor(props) {
@@ -30,10 +27,26 @@ class App extends React.Component {
             id: "",
         };
 
-        // initilize themes[0]
-        this.currentTheme = -1;
-        this.onThemeChange();
+        this.initTheme();
         this.checkDisclaimer();
+    }
+
+    initTheme = () => {
+        let currentTheme = localStorage.getItem('theme_choice');
+        if (currentTheme == null) currentTheme = 0;
+        document.documentElement.classList.add(themes[currentTheme]);
+        this.currentTheme = currentTheme;
+    }
+
+    switchTheme = () => {
+        let currentTheme = this.currentTheme;
+        let newTheme = (currentTheme + 1) % themes.length;
+        localStorage.setItem("theme_choice", newTheme);
+        document.documentElement.classList.remove(themes[currentTheme]);
+        document.documentElement.classList.add(themes[newTheme]);
+        this.currentTheme = newTheme;
+
+
     }
 
     checkDisclaimer = () => {
@@ -119,11 +132,7 @@ class App extends React.Component {
     };
 
     onThemeChange = () => {
-        let ni = (this.currentTheme + 1) % themes.length;
-        for (let [key, value] of Object.entries(themes[ni])) {
-            document.documentElement.style.setProperty(key, value);
-        }
-        this.currentTheme = ni;
+        this.switchTheme();
     };
 
     render() {
@@ -137,7 +146,7 @@ class App extends React.Component {
                 </button>
                 <Schedule schedule={this.state.sched} key={this.state.sched} />
                 <button id="theme_change" onClick={this.onThemeChange}>
-                    theme
+                    Change Theme
                 </button>
             </div>
         );

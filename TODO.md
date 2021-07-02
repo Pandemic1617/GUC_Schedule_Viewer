@@ -1,7 +1,7 @@
 # TODO
 
 ### Client
-- [ ] add theme picker at least dark/light
+- [ ] improve change theme design
 - [ ] test css for diffrent browsers (normalization)
 - [ ] organise files and remove unnecessary ones 
 
