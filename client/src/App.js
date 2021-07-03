@@ -17,7 +17,7 @@ const API_URL = "https://europe-west1-gucschedule.cloudfunctions.net/get_student
 const disclaimer_text =
     "This app comes with absolutely no warranties or guarantees. You are solely responsible for the use of this app and should only use it on people who have given you permission. This app merely uses information available to any GUC student through the admin system. This is an app made by a GUC student and is in no way endorsed by the GUC.";
 
-const themes = ['theme-dark', 'theme-light'];
+const themes = ["theme-dark", "theme-light"];
 
 class App extends React.Component {
     constructor(props) {
@@ -32,22 +32,21 @@ class App extends React.Component {
     }
 
     initTheme = () => {
-        let currentTheme = localStorage.getItem('theme_choice');
+        let currentTheme = localStorage.getItem("theme_choice");
         if (currentTheme == null) currentTheme = 0;
-        document.documentElement.classList.add(themes[currentTheme]);
-        this.currentTheme = currentTheme;
-    }
+        this.setTheme(currentTheme, false);
+    };
 
-    switchTheme = () => {
-        let currentTheme = this.currentTheme;
-        let newTheme = (currentTheme + 1) % themes.length;
-        localStorage.setItem("theme_choice", newTheme);
-        document.documentElement.classList.remove(themes[currentTheme]);
+    setTheme = (newTheme, save = true) => {
+        if (save) localStorage.setItem("theme_choice", newTheme);
         document.documentElement.classList.add(themes[newTheme]);
         this.currentTheme = newTheme;
+    };
 
-
-    }
+    switchTheme = () => {
+        document.documentElement.classList.remove(themes[this.currentTheme]);
+        this.setTheme((this.currentTheme + 1) % themes.length);
+    };
 
     checkDisclaimer = () => {
         if (localStorage.getItem("disclaimer_seen") >= current_disclaimer_version) return;

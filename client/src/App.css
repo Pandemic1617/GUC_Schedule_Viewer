@@ -61,5 +61,5 @@
     /* font-weight: 500; */
     position: absolute;
     top: 6px;
-    right: max(6px,calc(40vw - 210px));
+    right: max(6px, calc(39vw - 190px));
 }

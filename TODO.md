@@ -3,7 +3,7 @@
 ### Client
 - [x] improve change theme design
 - [ ] test css for diffrent browsers (normalization)
-- [ ] organise files and remove unnecessary ones 
+- [ ] organise files into folders and remove unnecessary ones 
 - [ ] change alert button text color and background color
 
 ### Server
@@ -25,3 +25,4 @@
 
 ### Strech
 - [ ] add tests
+- [ ] rewrite client and server in TS
