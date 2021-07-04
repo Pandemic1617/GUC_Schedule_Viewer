@@ -163,7 +163,7 @@ const parse_getStudentDataReport = (data) => {
 
 const getStudentDataReport = async (id) => {
 
-    if (!(/\d{1,2}-\d{4,5}/.test(id))) throw "invalid id";
+    if (!(/^\d{1,2}-\d{4,5}$/.test(id))) throw "invalid id";
 
     let retries = 0;
     while (true) {
@@ -195,13 +195,16 @@ exports.get_student_schedule = functions.region('europe-west1').runWith(runtimeO
     // TODO add request details logging
 
     // handle CORS
-    res.set('Access-Control-Allow-Origin', '*');
+    res.set('Access-Control-Allow-Origin', 'https://gucschedule.web.app');
     if (req.method === 'OPTIONS') {
         // Send response to OPTIONS requests
         res.set('Access-Control-Allow-Methods', 'GET');
         res.set('Access-Control-Allow-Headers', 'Content-Type');
         res.set('Access-Control-Max-Age', '3600');
         res.status(204).send('');
+        return;
+    } else if (req.method !== 'GET') {
+        res.status(405).send('');
         return;
     }
 
