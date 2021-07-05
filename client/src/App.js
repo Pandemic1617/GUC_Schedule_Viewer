@@ -71,7 +71,7 @@ class App extends React.Component {
     };
 
     getSchedule = async (id) => {
-        console.debug("getSchedule is call with " + id);
+        console.debug("getSchedule is called with", id);
         if (!/^\d{1,2}-\d{4,5}$/.test(id)) {
             this.onShowAlert("Error", "invalid id provided");
             analytics.logEvent("Load Scheudle", { id, type: "Error", result: "invalid id provided (internal)" });
@@ -82,7 +82,7 @@ class App extends React.Component {
         try {
             a = await axios.get(API_URL, { params: { id } });
         } catch (e) {
-            console.error("exception in getScheudle " + e.toString());
+            console.error("exception in getScheudle", e.toString());
             this.onShowAlert("Error while making request", e.toString());
             analytics.logEvent("Load Scheudle", { id, type: "Error while making request", result: e.toString() });
             return;
@@ -106,12 +106,10 @@ class App extends React.Component {
 
     updateID = (a) => {
         let value = a.target.value;
-        console.log("update id call with " + value);
         this.setState({ id: value });
         let button = this.getButton.current;
         if (/^\d{1,2}-\d{4,5}$/.test(value)) {
             button.setAttribute("ready", "");
-            console.log("set ready true");
         } else button.removeAttribute("ready");
     };
 
@@ -127,7 +125,7 @@ class App extends React.Component {
     };
 
     keyUpListener = (e) => {
-        if (e.keyCode != 13) return;
+        if (e.keyCode !== 13) return;
         this.onGetClick();
     };
 

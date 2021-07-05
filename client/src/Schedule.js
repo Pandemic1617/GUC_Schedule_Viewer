@@ -5,9 +5,9 @@ import CellView from "./CellView";
 
 class Schedule extends React.Component {
     constructor(props) {
-        console.debug("Schedule constructo called");
+        console.debug("Schedule constructor called");
         super(props);
-        this.state = { sched: this.parseScheudle(props.schedule), org_schedule: props.schedule };
+        this.state = { org_schedule: props.schedule };
     }
     shouldComponentUpdate(nextProps) {
         return nextProps.schedule !== this.state.org_schedule;
@@ -38,24 +38,35 @@ class Schedule extends React.Component {
         for (let i = 0; i < out.length; i++) for (let blah of out[i]) cnt[i] += blah.length;
 
         if (cnt[6] === 0) out.pop();
-        console.debug("parseSchedule: ", out);
+        console.debug("parseSchedule", out);
         return out;
     }
 
     render() {
+        let sched = this.parseScheudle(this.state.org_schedule);
+
         return (
             <div className="SchedView">
                 <table id="sched">
                     <tbody>
                         <tr>
-                            <th>idk</th><th>1st</th><th>2nd</th><th>3rd</th><th>4th</th><th>5th</th>
+                            <th>idk</th>
+                            <th>1st</th>
+                            <th>2nd</th>
+                            <th>3rd</th>
+                            <th>4th</th>
+                            <th>5th</th>
                         </tr>
-                        {this.state.sched.map((e, i) => {
+                        {sched.map((e, i) => {
                             return (
                                 <tr key={this.days[i]}>
                                     <th>{this.days[i]}</th>
                                     {e.map((v, i) => {
-                                        return (<th key={i}><CellView ini={v} /></th>);
+                                        return (
+                                            <th key={i}>
+                                                <CellView ini={v} />
+                                            </th>
+                                        );
                                     })}
                                 </tr>
                             );
