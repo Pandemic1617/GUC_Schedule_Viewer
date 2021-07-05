@@ -26,6 +26,7 @@ class App extends React.Component {
             sched: [],
             id: "",
         };
+        this.getButton = React.createRef();
 
         this.initTheme();
         this.checkDisclaimer();
@@ -60,7 +61,7 @@ class App extends React.Component {
 
     onGetClick = async () => {
         let id = this.state.id;
-        let a = document.querySelector("#get");
+        let a = this.getButton.current;
         if (a.disabled === true) return;
         this.setState({ sched: [] });
         a.disabled = true;
@@ -107,7 +108,7 @@ class App extends React.Component {
         let value = a.target.value;
         console.log("update id call with " + value);
         this.setState({ id: value });
-        let button = document.querySelector("#get");
+        let button = this.getButton.current;
         if (/^\d{1,2}-\d{4,5}$/.test(value)) {
             button.setAttribute("ready", "");
             console.log("set ready true");
@@ -140,7 +141,7 @@ class App extends React.Component {
                 <div id="name"> GUC Schedule Viewer</div>
                 <input id="id" type="text" placeholder="Enter GUC ID" onChange={this.updateID} onKeyUp={this.keyUpListener}></input>
                 <br></br>
-                <button id="get" onClick={this.onGetClick}>
+                <button id="get" onClick={this.onGetClick} ref={this.getButton}>
                     Load Schedule
                 </button>
                 <Schedule schedule={this.state.sched} key={this.state.sched} />
