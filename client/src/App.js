@@ -120,6 +120,7 @@ class App extends React.Component {
             html: '<span style="color:var(--text-color)">' + escapeHTML(info) + "</span>",
             background: "var(--background)",
             confirmButtonColor: "var(--color3)",
+            confirmButtonText: '<span style="color:var(--background)">OK</span>',
             ...obj,
         });
     };

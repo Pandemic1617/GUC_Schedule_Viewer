@@ -4,7 +4,7 @@
 - [x] improve change theme design
 - [ ] test css for diffrent browsers (normalization)
 - [ ] organise files into folders and remove unnecessary ones 
-- [ ] change alert button text color and background color
+- [x] change alert button text color and background color
 
 ### Server
 - [ ] properly store credentials in enviroment variables
