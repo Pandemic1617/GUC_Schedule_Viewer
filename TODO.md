@@ -2,7 +2,7 @@
 
 ### Client
 - [x] improve change theme design
-- [ ] test css for diffrent browsers (normalization)
+- [x] test css for diffrent browsers (normalization)
 - [x] organise files into folders and remove unnecessary ones 
 - [x] change alert button text color and background color
 
