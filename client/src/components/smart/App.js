@@ -7,8 +7,8 @@ import Schedule from "./Schedule";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 
-import { analytics } from "./analytics.js";
-import { escapeHTML } from "./utils.js";
+import { analytics } from "../../js/analytics.js";
+import { escapeHTML } from "../../js/utils.js";
 
 const MySwal = withReactContent(Swal);
 const current_disclaimer_version = 1;

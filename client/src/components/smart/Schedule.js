@@ -1,7 +1,7 @@
 // import logo from './logo.svg';
 import "./Schedule.css";
 import React from "react";
-import CellView from "./CellView";
+import CellView from "../visual/CellView";
 
 class Schedule extends React.Component {
     constructor(props) {
