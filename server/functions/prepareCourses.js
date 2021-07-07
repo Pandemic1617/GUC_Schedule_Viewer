@@ -7,9 +7,10 @@ const { JSDOM } = require('jsdom');
 
 const qs = require('qs');
 const ntlm = require('request-ntlm-promise');
-const { USERNAME, PASSWORD } = require('./credentials.js');
 const { prepareCoursesSecret } = require('./secret.js');
 
+const USERNAME = functions.config().credentials.username;
+const PASSWORD = functions.config().credentials.password;
 
 const parse_getCourses = (data) => {
     var doc = (new JSDOM(data)).window.document;

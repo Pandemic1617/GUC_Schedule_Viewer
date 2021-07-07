@@ -3,8 +3,10 @@ const admin = require('firebase-admin');
 
 const { JSDOM } = require('jsdom');
 const qs = require('qs');
-const { USERNAME, PASSWORD } = require('./credentials.js');
 const ntlm = require('request-ntlm-promise');
+
+const USERNAME = functions.config().credentials.username;
+const PASSWORD = functions.config().credentials.password;
 
 const max_retries = 4;
 

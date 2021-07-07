@@ -7,7 +7,7 @@
 - [x] change alert button text color and background color
 
 ### Server
-- [ ] properly store credentials in enviroment variables
+- [x] properly store credentials in environment variables
 - [x] change invalid id regex to match client
 - [ ] make sure logs are descriptive enough to fix edge cases in scraping
 - [ ] possibly change prepare_courses to proper auth
