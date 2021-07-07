@@ -74,7 +74,7 @@ class App extends React.Component {
         console.debug("getSchedule is called with", id);
         if (!/^\d{1,2}-\d{4,5}$/.test(id)) {
             this.onShowAlert("Error", "invalid id provided");
-            analytics.logEvent("Load Scheudle", { id, type: "Error", result: "invalid id provided (internal)" });
+            analytics.logEvent("Load Scheudle", { type: "Error", result: "invalid id provided (internal)" });
             return;
         }
 
@@ -84,21 +84,21 @@ class App extends React.Component {
         } catch (e) {
             console.error("exception in getScheudle", e.toString());
             this.onShowAlert("Error while making request", e.toString());
-            analytics.logEvent("Load Scheudle", { id, type: "Error while making request", result: e.toString() });
+            analytics.logEvent("Load Scheudle", { type: "Error while making request", result: e.toString() });
             return;
         }
 
         if (a.data.status !== "ok") {
             this.onShowAlert(a.data.status, a.data.error);
-            analytics.logEvent("Load Scheudle", { id, type: a.data.status, result: a.data.error });
+            analytics.logEvent("Load Scheudle", { type: a.data.status, result: a.data.error });
             return;
         }
 
         if (a.data.error) {
             this.onShowAlert("Warning", a.data.error);
-            analytics.logEvent("Load Scheudle", { id, type: "Warning", result: a.data.error });
+            analytics.logEvent("Load Scheudle", { type: "Warning", result: a.data.error });
         } else {
-            analytics.logEvent("Load Scheudle", { id, type: "ok", result: "not error from request" });
+            analytics.logEvent("Load Scheudle", { type: "ok", result: "not error from request" });
         }
 
         this.setState({ sched: a.data.data });
