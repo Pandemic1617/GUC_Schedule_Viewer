@@ -21,7 +21,7 @@
 
 ### Before Public Deployment
 - [x] remove id from analytics logEvent
-- [ ] add logo
+- [x] add logo
 - [ ] possibly disable api after group switching closes
 
 
