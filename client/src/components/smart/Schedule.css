@@ -24,7 +24,7 @@ table {
 }
 
 .SchedView::-webkit-scrollbar {
-    height: 0.8em;
+    height: 1.2vh;
 }
 
 .SchedView::-webkit-scrollbar-track {
