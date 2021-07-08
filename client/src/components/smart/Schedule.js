@@ -2,18 +2,16 @@
 import "./Schedule.css";
 import React from "react";
 import CellView from "../visual/CellView";
+import { days } from "../../js/consts.js";
 
 class Schedule extends React.Component {
     constructor(props) {
         console.debug("Schedule constructor called");
         super(props);
-        this.state = { org_schedule: props.schedule };
     }
     shouldComponentUpdate(nextProps) {
-        return nextProps.schedule !== this.state.org_schedule;
+        return nextProps.schedule !== this.props.schedule;
     }
-
-    days = ["Saturday", "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
 
     parseScheudle(inSched) {
         let out = new Array(7).fill(0).map((e) => {
@@ -43,7 +41,7 @@ class Schedule extends React.Component {
     }
 
     render() {
-        let sched = this.parseScheudle(this.state.org_schedule);
+        let sched = this.parseScheudle(this.props.schedule);
 
         return (
             <div className="SchedView">
@@ -59,11 +57,11 @@ class Schedule extends React.Component {
                         </tr>
                         {sched.map((e, i) => {
                             return (
-                                <tr key={this.days[i]}>
-                                    <th>{this.days[i]}</th>
-                                    {e.map((v, i) => {
+                                <tr key={e + i}>
+                                    <th>{days[i]}</th>
+                                    {e.map((v, j) => {
                                         return (
-                                            <th key={i}>
+                                            <th key={v + j}>
                                                 <CellView ini={v} />
                                             </th>
                                         );

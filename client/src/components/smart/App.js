@@ -9,15 +9,10 @@ import withReactContent from "sweetalert2-react-content";
 
 import { analytics } from "../../js/analytics.js";
 import { escapeHTML } from "../../js/utils.js";
+import ChangeTheme from "./ChangeTheme.js";
+import { current_disclaimer_version, API_URL, disclaimer_text } from "../../js/consts.js";
 
 const MySwal = withReactContent(Swal);
-const current_disclaimer_version = 1;
-const API_URL = "https://europe-west1-gucschedule.cloudfunctions.net/get_student_schedule";
-
-const disclaimer_text =
-    "This app comes with absolutely no warranties or guarantees. You are solely responsible for the use of this app and should only use it on people who have given you permission. This app merely uses information available to any GUC student through the admin system. This is an app made by a GUC student and is in no way endorsed by the GUC.";
-
-const themes = ["theme-dark", "theme-light"];
 
 class App extends React.Component {
     constructor(props) {
@@ -28,26 +23,8 @@ class App extends React.Component {
         };
         this.getButton = React.createRef();
 
-        this.initTheme();
         this.checkDisclaimer();
     }
-
-    initTheme = () => {
-        let currentTheme = localStorage.getItem("theme_choice");
-        if (currentTheme == null) currentTheme = 0;
-        this.setTheme(currentTheme, false);
-    };
-
-    setTheme = (newTheme, save = true) => {
-        if (save) localStorage.setItem("theme_choice", newTheme);
-        document.documentElement.classList.add(themes[newTheme]);
-        this.currentTheme = newTheme;
-    };
-
-    switchTheme = () => {
-        document.documentElement.classList.remove(themes[this.currentTheme]);
-        this.setTheme((this.currentTheme + 1) % themes.length);
-    };
 
     checkDisclaimer = () => {
         if (localStorage.getItem("disclaimer_seen") >= current_disclaimer_version) return;
@@ -130,10 +107,6 @@ class App extends React.Component {
         this.onGetClick();
     };
 
-    onThemeChange = () => {
-        this.switchTheme();
-    };
-
     render() {
         return (
             <div className="App">
@@ -143,10 +116,8 @@ class App extends React.Component {
                 <button id="get" onClick={this.onGetClick} ref={this.getButton}>
                     Load Schedule
                 </button>
-                <Schedule schedule={this.state.sched} key={this.state.sched} />
-                <button id="theme_change" onClick={this.onThemeChange}>
-                    Change Theme
-                </button>
+                <Schedule schedule={this.state.sched} />
+                <ChangeTheme />
             </div>
         );
     }

@@ -5,8 +5,8 @@
 - [x] test css for diffrent browsers (normalization)
 - [x] organise files into folders and remove unnecessary ones 
 - [x] change alert button text color and background color
-- [ ] add constants file
-- [ ] seperate the theme change button into a new component
+- [x] add constants file
+- [x] seperate the theme change button into a new component
 
 ### Server
 - [x] properly store credentials in environment variables
