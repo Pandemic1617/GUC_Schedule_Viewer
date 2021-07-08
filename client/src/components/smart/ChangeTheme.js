@@ -8,23 +8,27 @@ class ChangeTheme extends React.Component {
         this.initTheme();
     }
 
+    // checks the saved theme_choice and loads it. if none then themes[0]
     initTheme = () => {
         let currentTheme = localStorage.getItem("theme_choice");
         if (currentTheme == null) currentTheme = 0;
         this.setTheme(currentTheme, false);
     };
 
+    // sets the current theme and saves it in
     setTheme = (newTheme, save = true) => {
+        if (this.currentTheme) document.documentElement.classList.remove(themes[this.currentTheme]);
         if (save) localStorage.setItem("theme_choice", newTheme);
         document.documentElement.classList.add(themes[newTheme]);
         this.currentTheme = newTheme;
     };
 
+    // switches the current theme to the next one in themes
     switchTheme = () => {
-        document.documentElement.classList.remove(themes[this.currentTheme]);
         this.setTheme((this.currentTheme + 1) % themes.length);
     };
 
+    // called when Change Theme is clicked
     onThemeChange = () => {
         this.switchTheme();
     };
@@ -32,7 +36,7 @@ class ChangeTheme extends React.Component {
     render() {
         return (
             <div className="ChangeTheme">
-                <button id="theme_change" onClick={this.onThemeChange}>
+                <button id="themeChange" onClick={this.onThemeChange}>
                     Change Theme
                 </button>
             </div>
