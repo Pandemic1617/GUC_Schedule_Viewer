@@ -23,7 +23,7 @@ class Schedule extends React.Component {
                 <table id="sched">
                     <tbody>
                         <tr>
-                            <th>idk</th>
+                            <th>Day/Session</th>
                             <th>1st</th>
                             <th>2nd</th>
                             <th>3rd</th>

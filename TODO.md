@@ -17,11 +17,14 @@
 - [ ] make sure logs are descriptive enough to fix edge cases in scraping
 - [ ] add proper logging and remove old logging
 - [ ] add descriptive comments
+- [x] save commands to setup the local emulator's enviroment
 
 
 ### Public Deployment
 - [x] remove id from analytics logEvent
 - [x] add logo
+- [x] remove idk from table
+- [ ] limit max number of concurrent instances of functions
 - [ ] possibly disable api after group switching closes
 
 

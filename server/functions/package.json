@@ -6,7 +6,8 @@
     "shell": "firebase functions:shell",
     "start": "npm run shell",
     "deploy": "firebase deploy --only functions",
-    "logs": "firebase functions:log"
+    "logs": "firebase functions:log",
+    "setup-env": "firebase functions:config:get > .runtimeconfig.json"
   },
   "engines": {
     "node": "14"

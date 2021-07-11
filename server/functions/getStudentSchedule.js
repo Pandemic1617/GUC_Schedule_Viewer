@@ -99,7 +99,7 @@ const downloadCourseScheduleHelper = async (id, oview_state, oevent_validation) 
 
 // gets the course scheudle from the guc website and saves it to the store
 const downloadCourseSchedule = async (course) => {
-    let request_details = (await admin.firestore().collection("schedules").doc("get_courses_info").get()).data().request_details;
+    let request_details = (await admin.firestore().collection("schedules").doc("get_courses_info").get()).data().request_details; // get this info once globally
 
     let tut_schedule = await downloadCourseScheduleHelper(course.id, request_details.view_state, request_details.event_validation);
     let tut_groups_promises = [];
@@ -138,12 +138,12 @@ const getCourseSchedule = async (course_code, e_group) => {
         .doc("student_schedules")
         .collection("course_" + course_code)
         .doc("info")
-        .get();
+        .get(); // check this once per course since the same course is called for T,P,L
     if (!doc.exists) throw "course does not exist";
     course = doc.data();
 
     if (!course.loaded) {
-        await downloadCourseSchedule(course);
+        await downloadCourseSchedule(course); // return info from this function rather than getting the data from firestore again
     }
 
     let data = admin
@@ -199,7 +199,7 @@ const parse_getStudentDataReport = (data) => {
                 type_name = "Lecture";
             } else if (type == "P") {
                 type_name = "Practical";
-            }
+            }// else throw 
 
             let course_match = course_code.match(/([A-Za-z]+)([\d]+)/);
             let course_code_sp = course_match[1] + " " + course_match[2];
