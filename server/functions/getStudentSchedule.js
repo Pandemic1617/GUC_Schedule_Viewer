@@ -87,7 +87,7 @@ const downloadCourseScheduleHelper = async (id, oview_state, oevent_validation) 
 
             return getParseCS(parse_getCourseSchedule(resp));
         } catch (error) {
-            console.log(`getCourseSchedule, try: ${retries}, error: ${error.toString()}`);
+            functions.logger.warn(`getCourseSchedule, try: ${retries}, error: ${error.toString()}`);
             retries += 1;
             if (retries <= max_retries) continue;
             throw error;
@@ -116,7 +116,7 @@ const downloadCourseSchedule = async (course) => {
     }
 
     let done = await Promise.all(tut_groups_promises);
-    console.log("done downloading new course", done.length);
+    functions.logger.info(`downloaded ${course.code} with ${done.length} tutorials`);
     admin
         .firestore()
         .collection("schedules")
@@ -174,23 +174,15 @@ const parse_getStudentDataReport = (data) => {
     let ret = Array.from(doc.querySelector("#DG_ChangeGroupOffers").firstElementChild.children)
         .slice(1)
         .map((v) => {
-            let a = v.children[0].textContent;
-            let b = v.children[1].textContent;
-            let temp = a.split(" - ");
-            temp = temp[temp.length - 1];
-            temp = temp
-                .trim()
-                .split(" ")
-                .filter((e) => e);
-            let course_code = a
-                .slice(a.lastIndexOf("-") + 1)
-                .trim()
-                .split(" ")[0];
-            temp = b.split(" ").filter((e) => e);
-            temp = temp.slice(temp.length - 2);
-            let type = b.slice(b.lastIndexOf(" ")).trim()[0];
-            let tutorial_group = temp[1];
-            let attendance_group = b.slice(0, b.lastIndexOf(" ")) + parseInt(temp[1].slice(1)).toString();
+            let courseInfo = v.children[0].textContent;
+            let groupInfo = v.children[1].textContent;
+
+            let course_combined_name = courseInfo.slice(courseInfo.lastIndexOf(" - ") + 3).trim();
+            let course_code = course_combined_name.slice(0, course_combined_name.indexOf(" "));
+            let course_long_name = course_combined_name.slice(course_combined_name.indexOf(" ") + 1);
+            let tutorial_group = groupInfo.slice(groupInfo.lastIndexOf(" ") + 1);
+            let type = tutorial_group[0];
+            let attendance_group = groupInfo.slice(0, groupInfo.lastIndexOf(" ")) + tutorial_group.slice(1).replace(/^0+/, "");
 
             let type_name = "";
             if (type == "T") {
@@ -199,9 +191,15 @@ const parse_getStudentDataReport = (data) => {
                 type_name = "Lecture";
             } else if (type == "P") {
                 type_name = "Practical";
-            }// else throw 
+            } else {
+                type_name = "Unknown";
+                functions.logger.error("unkown type", { courseInfo, groupInfo });
+            }
 
-            let course_match = course_code.match(/([A-Za-z]+)([\d]+)/);
+            let course_match = course_code.match(/^([A-Za-z]+)([\d]+)$/);
+            if (course_match.length !== 3) {
+                functions.logger.error("course_match.length is not 3", { courseInfo, groupInfo });
+            }
             let course_code_sp = course_match[1] + " " + course_match[2];
             let expected_group = course_code_sp + " - " + attendance_group + " (" + type_name + ")";
 
@@ -230,7 +228,7 @@ const getStudentDataReport = async (id) => {
 
             return parse_getStudentDataReport(resp);
         } catch (error) {
-            console.log(`getStudentDataReport, try: ${retries}, error: ${error.toString()}`);
+            functions.logger.warn(`getStudentDataReport, try: ${retries}, error: ${error.toString()}`);
             retries += 1;
             if (retries <= max_retries) continue;
             throw error;
@@ -243,8 +241,8 @@ exports.get_student_schedule = functions
     .region("europe-west1")
     .runWith(runtimeOpts_get_student_schedule)
     .https.onRequest(async (req, res) => {
-        // TODO add request details logging
-
+        let id = req.query.id;
+        functions.logger.info(`incoming request from ${req.ip} with id ${id} and method ${req.method}`)
         // handle CORS
         res.set("Access-Control-Allow-Origin", "https://gucschedule.web.app");
         if (req.method === "OPTIONS") {
@@ -259,13 +257,13 @@ exports.get_student_schedule = functions
             return;
         }
 
-        let id = req.query.id;
+
         let student_data;
 
         try {
             student_data = await getStudentDataReport(id);
         } catch (e) {
-            console.log("in getStudentSchedule", e);
+            functions.logger.error(`error while getting Student Data Report ${e.toString()}`);
             res.send({ status: "error", error: e });
             return;
         }

@@ -14,10 +14,11 @@
 ### Server
 - [x] properly store credentials in environment variables
 - [x] change invalid id regex to match client
-- [ ] make sure logs are descriptive enough to fix edge cases in scraping
-- [ ] add proper logging and remove old logging
-- [ ] add descriptive comments
+- [x] make sure logs are descriptive enough to fix edge cases in scraping
+- [x] add proper logging and remove old logging
+- [x] add descriptive comments
 - [x] save commands to setup the local emulator's enviroment
+- [ ] reduce firestore reads by combining course loaded checks
 
 
 ### Public Deployment
