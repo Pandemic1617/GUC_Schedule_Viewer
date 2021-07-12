@@ -18,7 +18,8 @@
 - [x] add proper logging and remove old logging
 - [x] add descriptive comments
 - [x] save commands to setup the local emulator's enviroment
-- [ ] reduce firestore reads by combining course loaded checks
+- [x] reduce firestore reads by combining course loaded checks
+- [x] save all tutorials of a course in the same document to save firestore writes
 
 
 ### Public Deployment

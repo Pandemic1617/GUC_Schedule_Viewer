@@ -102,34 +102,30 @@ const downloadCourseSchedule = async (course) => {
     let request_details = (await admin.firestore().collection("schedules").doc("get_courses_info").get()).data().request_details; // get this info once globally
 
     let tut_schedule = await downloadCourseScheduleHelper(course.id, request_details.view_state, request_details.event_validation);
-    let tut_groups_promises = [];
-    for (const [e_group, sched] of Object.entries(tut_schedule)) {
-        tut_groups_promises.push(
-            admin
-                .firestore()
-                .collection("schedules")
-                .doc("student_schedules")
-                .collection("course_" + course.code)
-                .doc("group_" + e_group)
-                .set({ sched })
-        );
-    }
 
-    let done = await Promise.all(tut_groups_promises);
-    functions.logger.info(`downloaded ${course.code} with ${done.length} tutorials`);
-    admin
-        .firestore()
-        .collection("schedules")
-        .doc("student_schedules")
-        .collection("course_" + course.code)
-        .doc("info")
-        .set({ loaded: true }, { merge: true });
-    return;
+    let done = await Promise.all([
+        admin
+            .firestore()
+            .collection("schedules")
+            .doc("student_schedules")
+            .collection("course_" + course.code)
+            .doc("groups0")
+            .set({ sched: tut_schedule }),
+        admin
+            .firestore()
+            .collection("schedules")
+            .doc("student_schedules")
+            .collection("course_" + course.code)
+            .doc("info")
+            .set({ loaded: true }, { merge: true }),
+    ]);
+    functions.logger.info(`downloaded ${course.code} with ${Object.keys(tut_schedule).length} tutorials`);
+    return tut_schedule;
 };
 
 // returns the course schedule from either the store or calling downloadCourseSchedule
-const getCourseSchedule = async (course_code, e_group) => {
-    if (!course_code || !e_group) throw "invalid course_code or e_group";
+const getCourseSchedule = async (course_code) => {
+    if (!course_code) throw "invalid course_code";
     let course;
 
     let doc = await admin
@@ -143,7 +139,7 @@ const getCourseSchedule = async (course_code, e_group) => {
     course = doc.data();
 
     if (!course.loaded) {
-        await downloadCourseSchedule(course); // return info from this function rather than getting the data from firestore again
+        return await downloadCourseSchedule(course); // return info from this function rather than getting the data from firestore again
     }
 
     let data = admin
@@ -151,16 +147,32 @@ const getCourseSchedule = async (course_code, e_group) => {
         .collection("schedules")
         .doc("student_schedules")
         .collection("course_" + course_code)
-        .doc("group_" + e_group)
+        .doc("groups0")
         .get()
         .then((doc) => {
-            if (!doc.exists) throw "e_group does not exist";
+            if (!doc.exists) throw "course_loaded but groups0 doesn't exist";
             return doc.data().sched;
         })
         .catch((e) => {
             throw e;
         });
     return data;
+};
+
+const getCoursesScheudles = async (input_course_codes) => {
+    let course_codes = Array.from(new Set(input_course_codes));
+    let ret = {};
+    await Promise.all(
+        course_codes.map(async (course_code) => {
+            try {
+                let result = await getCourseSchedule(course_code);
+                ret[course_code] = { ok: true, result: result };
+            } catch (error) {
+                ret[course_code] = { ok: false, error: course_code + ": " + error.toString() };
+            }
+        })
+    );
+    return ret;
 };
 
 // parses the raw HTML to return the courses that a student takes
@@ -242,7 +254,7 @@ exports.get_student_schedule = functions
     .runWith(runtimeOpts_get_student_schedule)
     .https.onRequest(async (req, res) => {
         let id = req.query.id;
-        functions.logger.info(`incoming request from ${req.ip} with id ${id} and method ${req.method}`)
+        functions.logger.info(`incoming request from ${req.ip} with id ${id} and method ${req.method}`);
         // handle CORS
         res.set("Access-Control-Allow-Origin", "https://gucschedule.web.app");
         if (req.method === "OPTIONS") {
@@ -257,7 +269,6 @@ exports.get_student_schedule = functions
             return;
         }
 
-
         let student_data;
 
         try {
@@ -267,25 +278,22 @@ exports.get_student_schedule = functions
             res.send({ status: "error", error: e });
             return;
         }
-        let err = "";
+        let err = [];
         let result = [];
-        let done = [];
+
+        let course_codes = student_data.map((e) => e.course_code);
+        let course_schedules = await getCoursesScheudles(course_codes);
 
         for (let course of student_data) {
-            let func = async () => {
-                let a;
-                try {
-                    a = await getCourseSchedule(course.course_code, course.expected_group);
-                    result.push({ course_code: course.course_code, tut_group: course.tutorial_group, type: course.type_name, sessions: a });
-                } catch (e) {
-                    err += course.course_code + " " + course.type_name + ": " + e + "\n";
-                }
-            };
-            done.push(func);
+            let course_info = course_schedules[course.course_code];
+            if (course_info.ok) {
+                result.push({ course_code: course.course_code, tut_group: course.tutorial_group, type: course.type_name, sessions: course_info.result[course.expected_group] });
+            } else {
+                err.push(course_info.error);
+            }
         }
 
-        await Promise.all(done.map((fn) => fn()));
 
-        let ret = { status: "ok", error: err, data: result };
+        let ret = { status: "ok", error: err.join("\n"), data: result };
         res.send(ret);
     });
