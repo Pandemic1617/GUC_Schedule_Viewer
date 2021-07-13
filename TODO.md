@@ -20,12 +20,14 @@
 - [x] save commands to setup the local emulator's enviroment
 - [x] reduce firestore reads by combining course loaded checks
 - [x] save all tutorials of a course in the same document to save firestore writes
-
+- [ ] make a global request_details variable
+- [ ] merge info and groups0 documents in firestore
 
 ### Public Deployment
 - [x] remove id from analytics logEvent
 - [x] add logo
 - [x] remove idk from table
+- [ ] add google analytics to disclaimer
 - [ ] limit max number of concurrent instances of functions
 - [ ] possibly disable api after group switching closes
 
