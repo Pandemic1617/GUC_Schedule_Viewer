@@ -20,7 +20,7 @@
 - [x] save commands to setup the local emulator's enviroment
 - [x] reduce firestore reads by combining course loaded checks
 - [x] save all tutorials of a course in the same document to save firestore writes
-- [ ] make a global request_details variable
+- [x] make a global request_details variable
 - [ ] merge info and groups0 documents in firestore
 
 ### Public Deployment

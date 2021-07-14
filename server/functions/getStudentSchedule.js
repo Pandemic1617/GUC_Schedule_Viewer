@@ -5,6 +5,8 @@ const { JSDOM } = require("jsdom");
 const qs = require("qs");
 const ntlm = require("request-ntlm-promise");
 
+const lazyVariable = require("./lazy.js").lazyVariable;
+
 const USERNAME = functions.config().credentials.username;
 const PASSWORD = functions.config().credentials.password;
 
@@ -14,6 +16,10 @@ const runtimeOpts_get_student_schedule = {
     timeoutSeconds: 120,
     memory: "1GB",
 };
+
+const request_details = lazyVariable(async () => {
+    return (await admin.firestore().collection("schedules").doc("get_courses_info").get()).data().request_details;
+});
 
 // takes a the parsed course schedule and groups the scheudles for the individual tutorials
 const getParseCS = (ini) => {
@@ -99,9 +105,9 @@ const downloadCourseScheduleHelper = async (id, oview_state, oevent_validation) 
 
 // gets the course scheudle from the guc website and saves it to the store
 const downloadCourseSchedule = async (course) => {
-    let request_details = (await admin.firestore().collection("schedules").doc("get_courses_info").get()).data().request_details; // get this info once globally
+    let { view_state, event_validation } = await request_details();
 
-    let tut_schedule = await downloadCourseScheduleHelper(course.id, request_details.view_state, request_details.event_validation);
+    let tut_schedule = await downloadCourseScheduleHelper(course.id, view_state, event_validation);
 
     let done = await Promise.all([
         admin
@@ -287,12 +293,13 @@ exports.get_student_schedule = functions
         for (let course of student_data) {
             let course_info = course_schedules[course.course_code];
             if (course_info.ok) {
-                result.push({ course_code: course.course_code, tut_group: course.tutorial_group, type: course.type_name, sessions: course_info.result[course.expected_group] });
+                if (course_info.result[course.expected_group] != undefined)
+                    result.push({ course_code: course.course_code, tut_group: course.tutorial_group, type: course.type_name, sessions: course_info.result[course.expected_group] });
+                else err.push(course.course_code + `: group ${course.expected_group} not found`);
             } else {
-                err.push(course_info.error);
+                err.push(course.course_code + ": " + course_info.error);
             }
         }
-
 
         let ret = { status: "ok", error: err.join("\n"), data: result };
         res.send(ret);
