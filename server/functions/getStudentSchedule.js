@@ -109,22 +109,14 @@ const downloadCourseSchedule = async (course) => {
 
     let tut_schedule = await downloadCourseScheduleHelper(course.id, view_state, event_validation);
 
-    let done = await Promise.all([
-        admin
-            .firestore()
-            .collection("schedules")
-            .doc("student_schedules")
-            .collection("course_" + course.code)
-            .doc("groups0")
-            .set({ sched: tut_schedule }),
-        admin
-            .firestore()
-            .collection("schedules")
-            .doc("student_schedules")
-            .collection("course_" + course.code)
-            .doc("info")
-            .set({ loaded: true }, { merge: true }),
-    ]);
+    await admin
+        .firestore()
+        .collection("schedules")
+        .doc("student_schedules")
+        .collection("course_" + course.code)
+        .doc("info")
+        .set({ loaded: true, sched: tut_schedule }, { merge: true });
+
     functions.logger.info(`downloaded ${course.code} with ${Object.keys(tut_schedule).length} tutorials`);
     return tut_schedule;
 };
@@ -132,7 +124,6 @@ const downloadCourseSchedule = async (course) => {
 // returns the course schedule from either the store or calling downloadCourseSchedule
 const getCourseSchedule = async (course_code) => {
     if (!course_code) throw "invalid course_code";
-    let course;
 
     let doc = await admin
         .firestore()
@@ -140,29 +131,15 @@ const getCourseSchedule = async (course_code) => {
         .doc("student_schedules")
         .collection("course_" + course_code)
         .doc("info")
-        .get(); // check this once per course since the same course is called for T,P,L
+        .get();
+
     if (!doc.exists) throw "course does not exist";
-    course = doc.data();
 
-    if (!course.loaded) {
-        return await downloadCourseSchedule(course); // return info from this function rather than getting the data from firestore again
-    }
+    let course = doc.data();
 
-    let data = admin
-        .firestore()
-        .collection("schedules")
-        .doc("student_schedules")
-        .collection("course_" + course_code)
-        .doc("groups0")
-        .get()
-        .then((doc) => {
-            if (!doc.exists) throw "course_loaded but groups0 doesn't exist";
-            return doc.data().sched;
-        })
-        .catch((e) => {
-            throw e;
-        });
-    return data;
+    if (course.loaded)
+        return course.sched;
+    return await downloadCourseSchedule(course);
 };
 
 const getCoursesScheudles = async (input_course_codes) => {

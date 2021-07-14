@@ -21,7 +21,7 @@
 - [x] reduce firestore reads by combining course loaded checks
 - [x] save all tutorials of a course in the same document to save firestore writes
 - [x] make a global request_details variable
-- [ ] merge info and groups0 documents in firestore
+- [x] merge info and groups0 documents in firestore
 
 ### Public Deployment
 - [x] remove id from analytics logEvent
