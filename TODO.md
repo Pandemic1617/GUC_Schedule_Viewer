@@ -27,7 +27,7 @@
 - [x] remove id from analytics logEvent
 - [x] add logo
 - [x] remove idk from table
-- [ ] add google analytics to disclaimer
+- [x] add google analytics to disclaimer
 - [ ] limit max number of concurrent instances of functions
 - [ ] possibly disable api after group switching closes
 
