@@ -63,6 +63,8 @@ exports.prepare_courses = functions
             res.status(500).send({ error: "whatcha doin" });
             return;
         }
+
+        const loaded = req.query.loaded == "true";
         let result_courses = await getCourses();
         let courses_list = result_courses.courses_list;
 
@@ -71,15 +73,17 @@ exports.prepare_courses = functions
             .collection("schedules")
             .doc("get_courses_info")
             .set({ request_details: { event_validation: result_courses.event_validation, view_state: result_courses.view_state } }, { merge: true });
-        courses_promises = courses_list.map((course) =>
-            admin
+        courses_promises = courses_list.map((course) => {
+            let doc = admin
                 .firestore()
                 .collection("schedules")
                 .doc("student_schedules")
                 .collection("course_" + course.course_code)
-                .doc("info")
-                .set({ loaded: false, id: course.id, course_name: course.course_name, code: course.course_code }, { merge: true })
-        );
+                .doc("info");
+            if (!loaded) doc = doc.set({ loaded, id: course.id, course_name: course.course_name, code: course.course_code }, { merge: true });
+            else doc = doc.set({ id: course.id, course_name: course.course_name, code: course.course_code }, { merge: true });
+            return doc;
+        });
 
         let done = await Promise.all(courses_promises);
 
