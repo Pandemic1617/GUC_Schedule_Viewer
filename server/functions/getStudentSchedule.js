@@ -137,8 +137,7 @@ const getCourseSchedule = async (course_code) => {
 
     let course = doc.data();
 
-    if (course.loaded)
-        return course.sched;
+    if (course.loaded) return course.sched;
     return await downloadCourseSchedule(course);
 };
 
@@ -267,7 +266,7 @@ exports.get_student_schedule = functions
         let course_codes = student_data.map((e) => e.course_code);
         let course_schedules = await getCoursesScheudles(course_codes);
 
-        for (let course_info of course_schedules) if (!course_info.ok) err.push(course_info.error);
+        for (let [course_code, course_info] of Object.entries(course_schedules)) if (!course_info.ok) err.push(course_info.error);
 
         for (let course of student_data) {
             let course_info = course_schedules[course.course_code];
@@ -275,7 +274,6 @@ exports.get_student_schedule = functions
             if (course_info.result[course.expected_group] != undefined)
                 result.push({ course_code: course.course_code, tut_group: course.tutorial_group, type: course.type_name, sessions: course_info.result[course.expected_group] });
             else err.push(course.course_code + `: group ${course.expected_group} not found`);
-
         }
 
         let ret = { status: "ok", error: err.join("\n"), data: result };
