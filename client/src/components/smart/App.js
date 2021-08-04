@@ -6,6 +6,7 @@ import Schedule from "../visual/Schedule";
 
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
+import _ from "lodash";
 
 import { analytics } from "../../js/analytics.js";
 import { escapeHTML } from "../../js/utils.js";
@@ -30,7 +31,7 @@ class App extends React.Component {
     checkDisclaimer = () => {
         if (localStorage.getItem("disclaimer_seen") >= currentDisclaimerVersion) return;
 
-        this.showAlert("Disclaimer", disclaimerText, { backdrop: true, allowOutsideClick: () => false }).then((e) => {
+        this.showAlert("Disclaimer", disclaimerText, { backdrop: true, allowOutsideClick: () => false, dontEscape: true }).then((e) => {
             if (e.isConfirmed) localStorage.setItem("disclaimer_seen", currentDisclaimerVersion);
         });
 
@@ -100,11 +101,11 @@ class App extends React.Component {
         console.debug("displayed alert");
         return MySwal.fire({
             title: '<span style="color:var(--color3)">' + escapeHTML(type) + "</span>",
-            html: '<span style="color:var(--text-color)">' + escapeHTML(info) + "</span>",
+            html: '<span style="color:var(--text-color);white-space: pre-wrap">' + (obj.dontEscape ? info : escapeHTML(info)) + "</span>",
             background: "var(--background)",
             confirmButtonColor: "var(--color3)",
             confirmButtonText: '<span style="color:var(--background)">OK</span>',
-            ...obj,
+            ..._.omit(obj, "dontEscape"),
         });
     };
 
