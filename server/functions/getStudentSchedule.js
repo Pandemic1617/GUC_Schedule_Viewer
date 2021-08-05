@@ -21,7 +21,7 @@ const request_details = lazyVariable(async () => {
     return (await admin.firestore().collection("schedules").doc("get_courses_info").get()).data().request_details;
 });
 
-// takes a the parsed course schedule and groups the scheudles for the individual tutorials
+// takes the parsed course schedule and groups the scheudles for the individual tutorials
 const getParseCS = (ini) => {
     let ret = {};
     for (let i = 0; i < ini.length; i += 1) {
