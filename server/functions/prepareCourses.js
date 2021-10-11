@@ -67,6 +67,7 @@ exports.prepare_courses = functions
         const loaded = req.query.loaded == "true";
         let result_courses = await getCourses();
         let courses_list = result_courses.courses_list;
+        console.log("get courses done");
 
         let writeResult = await admin
             .firestore()

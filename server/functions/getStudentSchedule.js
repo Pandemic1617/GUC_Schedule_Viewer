@@ -118,11 +118,11 @@ const downloadCourseSchedule = async (course) => {
         .set({ loaded: true, sched: tut_schedule }, { merge: true });
 
     functions.logger.info(`downloaded ${course.code} with ${Object.keys(tut_schedule).length} tutorials`);
-    return tut_schedule;
+    return { loaded: true, sched: tut_schedule };
 };
 
 // returns the course schedule from either the store or calling downloadCourseSchedule
-const getCourseSchedule = async (course_code) => {
+const getCourseData = async (course_code) => {
     if (!course_code) throw "invalid course_code";
 
     let doc = await admin
@@ -137,17 +137,17 @@ const getCourseSchedule = async (course_code) => {
 
     let course = doc.data();
 
-    if (course.loaded) return course.sched;
-    return await downloadCourseSchedule(course);
+    if (course.loaded) return course;
+    return { ...course, ...(await downloadCourseSchedule(course)) };
 };
 
-const getCoursesScheudles = async (input_course_codes) => {
+const getCoursesData = async (input_course_codes) => {
     let course_codes = Array.from(new Set(input_course_codes));
     let ret = {};
     await Promise.all(
         course_codes.map(async (course_code) => {
             try {
-                let result = await getCourseSchedule(course_code);
+                let result = await getCourseData(course_code);
                 ret[course_code] = { ok: true, result: result };
             } catch (error) {
                 ret[course_code] = { ok: false, error: course_code + ": " + error.toString() };
@@ -264,15 +264,21 @@ exports.get_student_schedule = functions
         let result = [];
 
         let course_codes = student_data.map((e) => e.course_code);
-        let course_schedules = await getCoursesScheudles(course_codes);
+        let course_schedules = await getCoursesData(course_codes);
 
         for (let [course_code, course_info] of Object.entries(course_schedules)) if (!course_info.ok) err.push(course_info.error);
 
         for (let course of student_data) {
             let course_info = course_schedules[course.course_code];
             if (!course_info.ok) continue;
-            if (course_info.result[course.expected_group] != undefined)
-                result.push({ course_code: course.course_code, tut_group: course.tutorial_group, type: course.type_name, sessions: course_info.result[course.expected_group] });
+            if (course_info.result.sched[course.expected_group] != undefined)
+                result.push({
+                    course_code: course.course_code,
+                    tut_group: course.tutorial_group,
+                    type: course.type_name,
+                    sessions: course_info.result.sched[course.expected_group],
+                    course_name: course_info.result.course_name,
+                });
             else err.push(course.course_code + `: group ${course.expected_group} not found`);
         }
 
