@@ -1,3 +1,6 @@
+import Swal from "sweetalert2";
+import withReactContent from "sweetalert2-react-content";
+import _, { toLower, toUpper } from "lodash";
 let escapeHTML = (text) => {
     let a = document.createElement("div");
     a.appendChild(document.createTextNode(text));
@@ -15,6 +18,7 @@ let parseScheudle = (inSched) => {
             let ret = {};
 
             ret.courseCode = course.course_code;
+            ret.courseName = course.course_name || "";
             ret.type = course.type;
             ret.tutorialGroup = course.tut_group;
             ret.location = session.location;
@@ -32,4 +36,20 @@ let parseScheudle = (inSched) => {
     return out;
 };
 
-export { escapeHTML, parseScheudle };
+const MySwal = withReactContent(Swal);
+
+const showAlert = (type, info = "", obj = {}) => {
+    console.debug("displayed alert");
+    return MySwal.fire({
+        title: '<span style="color:var(--color3)">' + escapeHTML(type) + "</span>",
+        html: '<span style="color:var(--text-color);white-space: pre-wrap">' + (obj.dontEscape ? info : escapeHTML(info)) + "</span>",
+        background: "var(--background)",
+        confirmButtonColor: "var(--color3)",
+        confirmButtonText: '<span style="color:var(--background)">OK</span>',
+        ..._.omit(obj, "dontEscape"),
+    });
+};
+
+const camelToSpace = (camelString) => [...camelString].map((c, i) => (i && c === toLower(c) ? c : " " + toUpper(c))).join('').trim();
+
+export { escapeHTML, parseScheudle, showAlert, camelToSpace };

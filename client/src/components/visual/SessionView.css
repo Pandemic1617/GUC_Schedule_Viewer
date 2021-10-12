@@ -18,6 +18,17 @@
 .sessioncontainer {
     margin: 1vmin;
 }
+
+.SessionPopupKey{
+  display: inline-block;
+  font-style: italic;
+  font-size: smaller;
+}
+
+.SessionPopupValue{
+  display: inline-block;
+}
+
 /* 
 .Lecture {
   color: #6f5060;

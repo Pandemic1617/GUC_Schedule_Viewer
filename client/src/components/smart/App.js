@@ -4,16 +4,11 @@ import axios from "axios";
 
 import Schedule from "../visual/Schedule";
 
-import Swal from "sweetalert2";
-import withReactContent from "sweetalert2-react-content";
-import _ from "lodash";
-
 import { analytics } from "../../js/analytics.js";
-import { escapeHTML } from "../../js/utils.js";
+
 import ChangeTheme from "./ChangeTheme.js";
 import { currentDisclaimerVersion, ApiUrl, disclaimerText } from "../../js/consts.js";
-
-const MySwal = withReactContent(Swal);
+import { showAlert } from "../../js/utils.js";
 
 class App extends React.Component {
     constructor(props) {
@@ -31,7 +26,7 @@ class App extends React.Component {
     checkDisclaimer = () => {
         if (localStorage.getItem("disclaimer_seen") >= currentDisclaimerVersion) return;
 
-        this.showAlert("Disclaimer", disclaimerText, { backdrop: true, allowOutsideClick: () => false, dontEscape: true }).then((e) => {
+        showAlert("Disclaimer", disclaimerText, { backdrop: true, allowOutsideClick: () => false, dontEscape: true }).then((e) => {
             if (e.isConfirmed) localStorage.setItem("disclaimer_seen", currentDisclaimerVersion);
         });
 
@@ -54,7 +49,7 @@ class App extends React.Component {
     getSchedule = async (id) => {
         console.debug("getSchedule is called with", id);
         if (!/^\d{1,2}-\d{4,5}$/.test(id)) {
-            this.showAlert("Error", "invalid id provided");
+            showAlert("Error", "invalid id provided");
             analytics.logEvent("Load Scheudle", { type: "Error", result: "invalid id provided (internal)" });
             return;
         }
@@ -64,19 +59,19 @@ class App extends React.Component {
             a = await axios.get(ApiUrl, { params: { id } });
         } catch (e) {
             console.error("exception in getScheudle", e.toString());
-            this.showAlert("Error while making request", e.toString());
+            showAlert("Error while making request", e.toString());
             analytics.logEvent("Load Scheudle", { type: "Error while making request", result: e.toString() });
             return;
         }
 
         if (a.data.status !== "ok") {
-            this.showAlert(a.data.status, a.data.error);
+            showAlert(a.data.status, a.data.error);
             analytics.logEvent("Load Scheudle", { type: a.data.status, result: a.data.error });
             return;
         }
 
         if (a.data.error) {
-            this.showAlert("Warning", a.data.error);
+            showAlert("Warning", a.data.error);
             analytics.logEvent("Load Scheudle", { type: "Warning", result: a.data.error });
         } else {
             analytics.logEvent("Load Scheudle", { type: "ok", result: "not error from request" });
@@ -97,17 +92,6 @@ class App extends React.Component {
 
     // shows an alert using sweet alert 2
     // takes the title, message, additional sweet alert 2 parameters
-    showAlert = (type, info = "", obj = {}) => {
-        console.debug("displayed alert");
-        return MySwal.fire({
-            title: '<span style="color:var(--color3)">' + escapeHTML(type) + "</span>",
-            html: '<span style="color:var(--text-color);white-space: pre-wrap">' + (obj.dontEscape ? info : escapeHTML(info)) + "</span>",
-            background: "var(--background)",
-            confirmButtonColor: "var(--color3)",
-            confirmButtonText: '<span style="color:var(--background)">OK</span>',
-            ..._.omit(obj, "dontEscape"),
-        });
-    };
 
     // triggers getScheudle when the enter key is pressed
     keyUpListener = (e) => {
