@@ -171,7 +171,7 @@ const parse_getStudentDataReport = (data) => {
             let courseInfo = v.children[0].textContent;
             let groupInfo = v.children[1].textContent;
 
-            let course_combined_name = courseInfo.slice(courseInfo.lastIndexOf(" - ") + 3).trim();
+            let course_combined_name = courseInfo.slice(courseInfo.indexOf(" - ") + 3).trim();
             let course_code = course_combined_name.slice(0, course_combined_name.indexOf(" "));
             let course_long_name = course_combined_name.slice(course_combined_name.indexOf(" ") + 1);
             let tutorial_group = groupInfo.slice(groupInfo.lastIndexOf(" ") + 1);
@@ -190,7 +190,7 @@ const parse_getStudentDataReport = (data) => {
                 functions.logger.error("unkown type", { courseInfo, groupInfo });
             }
 
-            let course_match = course_code.match(/^([A-Za-z]+)([\d]+)$/);
+            let course_match = course_code.match(/^([A-Za-z]+)([\d]*)$/);
             if (course_match.length !== 3) {
                 functions.logger.error("course_match.length is not 3", { courseInfo, groupInfo });
             }
