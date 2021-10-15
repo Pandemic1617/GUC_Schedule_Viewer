@@ -5,19 +5,13 @@ const { JSDOM } = require("jsdom");
 const qs = require("qs");
 const ntlm = require("request-ntlm-promise");
 
-const lazyVariable = require("./lazy.js").lazyVariable;
+const { lazyVariable, currentTime, doRetries } = require("./utils");
+const { maxDataReportRetries, runtimeOptsGetStudentSchedule, maxCourseScheduleRetries } = require("./consts");
 
 const USERNAME = functions.config().credentials.username;
 const PASSWORD = functions.config().credentials.password;
 
-const max_retries = 4;
-
-const runtimeOpts_get_student_schedule = {
-    timeoutSeconds: 120,
-    memory: "1GB",
-};
-
-const request_details = lazyVariable(async () => {
+const requestDetails = lazyVariable(async () => {
     return (await admin.firestore().collection("schedules").doc("get_courses_info").get()).data().request_details;
 });
 
@@ -26,9 +20,9 @@ const getParseCS = (ini) => {
     let ret = {};
     for (let i = 0; i < ini.length; i += 1) {
         for (let j = 0; j < ini[i].ret.length; j += 1) {
-            let cell = ini[i].ret[j];
+            const cell = ini[i].ret[j];
             for (const session of cell) {
-                let group = session.group;
+                const group = session.group;
                 if (ret[group]) {
                     ret[group].push({
                         x: i,
@@ -53,17 +47,17 @@ const getParseCS = (ini) => {
 };
 
 // parses the raw HTML to return the course scheudle
-const parse_getCourseSchedule = (data) => {
+const parseGetCourseSchedule = (data) => {
     var doc = new JSDOM(data).window.document;
-    let ret = Array.from(doc.querySelector("#schedule").firstElementChild.children)
+    const ret = Array.from(doc.querySelector("#schedule").firstElementChild.children)
         .slice(1)
         .map((row) => {
-            let day = row.children[0].textContent.trim();
-            let ret = Array.from(row.children)
+            const day = row.children[0].textContent.trim();
+            const ret = Array.from(row.children)
                 .slice(1)
                 .map((cell) => {
                     return Array.from(cell.children).map((s) => {
-                        let session = s.firstElementChild;
+                        const session = s.firstElementChild;
                         return { group: session.children[1].textContent, location: session.children[3].textContent, staff: session.children[5].textContent };
                     });
                 });
@@ -73,41 +67,35 @@ const parse_getCourseSchedule = (data) => {
 };
 
 // returns the courses scheudle by requesting it from guc.edu.eg
-const downloadCourseScheduleHelper = async (id, oview_state, oevent_validation) => {
-    let retries = 0;
-    while (true) {
-        try {
-            const form_data = qs.stringify({ __VIEWSTATE: oview_state, __EVENTVALIDATION: oevent_validation, "course[]": id });
+const downloadCourseScheduleHelper = async (id, viewState, eventValidation) => {
+    return doRetries(async () => {
+        const formData = qs.stringify({ __VIEWSTATE: viewState, __EVENTVALIDATION: eventValidation, "course[]": id });
 
-            let resp = await ntlm.post({
-                username: USERNAME,
-                password: PASSWORD,
-                url: "http://student.guc.edu.eg/External/LSI/EDUMS/CSMS/SearchAcademicScheduled_001.aspx",
-                headers: { "Content-Type": "application/x-www-form-urlencoded" },
-                body: form_data,
-            });
+        const resp = await ntlm.post({
+            username: USERNAME,
+            password: PASSWORD,
+            url: "http://student.guc.edu.eg/External/LSI/EDUMS/CSMS/SearchAcademicScheduled_001.aspx",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: formData,
+        });
 
-            if (resp == undefined) {
-                throw "getCourseSchedule, result is undefined";
-            }
-
-            return getParseCS(parse_getCourseSchedule(resp));
-        } catch (error) {
-            functions.logger.warn(`getCourseSchedule, try: ${retries}, error: ${error.toString()}`);
-            retries += 1;
-            if (retries <= max_retries) continue;
-            throw error;
+        if (resp == undefined) {
+            throw "getCourseSchedule, result is undefined";
         }
-    }
+
+        return getParseCS(parseGetCourseSchedule(resp));
+    }, maxCourseScheduleRetries);
     // var event_validation = doc.querySelector("#__EVENTVALIDATION").value;
     // var view_state = doc.querySelector("#__VIEWSTATE").value;
 };
 
 // gets the course scheudle from the guc website and saves it to the store
 const downloadCourseSchedule = async (course) => {
-    let { view_state, event_validation } = await request_details();
+    const { view_state: viewState, event_validation: eventValidation } = await requestDetails();
 
-    let tut_schedule = await downloadCourseScheduleHelper(course.id, view_state, event_validation);
+    const courseSchedule = await downloadCourseScheduleHelper(course.id, viewState, eventValidation);
+
+    const data = { loaded: true, sched: courseSchedule };
 
     await admin
         .firestore()
@@ -115,42 +103,42 @@ const downloadCourseSchedule = async (course) => {
         .doc("student_schedules")
         .collection("course_" + course.code)
         .doc("info")
-        .set({ loaded: true, sched: tut_schedule }, { merge: true });
+        .set(data, { merge: true });
 
-    functions.logger.info(`downloaded ${course.code} with ${Object.keys(tut_schedule).length} tutorials`);
-    return { loaded: true, sched: tut_schedule };
+    functions.logger.info(`downloaded ${course.code} with ${Object.keys(courseSchedule).length} tutorials`);
+    return data;
 };
 
 // returns the course schedule from either the store or calling downloadCourseSchedule
-const getCourseData = async (course_code) => {
-    if (!course_code) throw "invalid course_code";
+const getCourseData = async (courseCode) => {
+    if (!courseCode) throw "invalid course_code";
 
-    let doc = await admin
+    const doc = await admin
         .firestore()
         .collection("schedules")
         .doc("student_schedules")
-        .collection("course_" + course_code)
+        .collection("course_" + courseCode)
         .doc("info")
         .get();
 
     if (!doc.exists) throw "course does not exist";
 
-    let course = doc.data();
+    const course = doc.data();
 
     if (course.loaded) return course;
     return { ...course, ...(await downloadCourseSchedule(course)) };
 };
 
-const getCoursesData = async (input_course_codes) => {
-    let course_codes = Array.from(new Set(input_course_codes));
+const getCoursesData = async (inputCourseCodes) => {
+    const courseCodes = Array.from(new Set(inputCourseCodes));
     let ret = {};
     await Promise.all(
-        course_codes.map(async (course_code) => {
+        courseCodes.map(async (courseCode) => {
             try {
-                let result = await getCourseData(course_code);
-                ret[course_code] = { ok: true, result: result };
+                const result = await getCourseData(courseCode);
+                ret[courseCode] = { ok: true, result: result };
             } catch (error) {
-                ret[course_code] = { ok: false, error: course_code + ": " + error.toString() };
+                ret[courseCode] = { ok: false, error: courseCode + ": " + error.toString() };
             }
         })
     );
@@ -158,46 +146,46 @@ const getCoursesData = async (input_course_codes) => {
 };
 
 // parses the raw HTML to return the courses that a student takes
-const parse_getStudentDataReport = (data) => {
+const parseGetStudentDataReport = (data) => {
     var doc = new JSDOM(data).window.document;
 
     if (doc.querySelector("#L_Info1").textContent.trim()) {
         throw "invalid id provided";
     }
 
-    let ret = Array.from(doc.querySelector("#DG_ChangeGroupOffers").firstElementChild.children)
+    const ret = Array.from(doc.querySelector("#DG_ChangeGroupOffers").firstElementChild.children)
         .slice(1)
         .map((v) => {
-            let courseInfo = v.children[0].textContent;
-            let groupInfo = v.children[1].textContent;
+            const courseInfo = v.children[0].textContent;
+            const groupInfo = v.children[1].textContent;
 
-            let course_combined_name = courseInfo.slice(courseInfo.indexOf(" - ") + 3).trim();
-            let course_code = course_combined_name.slice(0, course_combined_name.indexOf(" "));
-            let course_long_name = course_combined_name.slice(course_combined_name.indexOf(" ") + 1);
-            let tutorial_group = groupInfo.slice(groupInfo.lastIndexOf(" ") + 1);
-            let type = tutorial_group[0];
-            let attendance_group = groupInfo.slice(0, groupInfo.lastIndexOf(" ")) + tutorial_group.slice(1).replace(/^0+/, "");
+            const courseCombinedName = courseInfo.slice(courseInfo.indexOf(" - ") + 3).trim();
+            const courseCode = courseCombinedName.slice(0, courseCombinedName.indexOf(" "));
+            const courseLongName = courseCombinedName.slice(courseCombinedName.indexOf(" ") + 1);
+            const tutorialGroup = groupInfo.slice(groupInfo.lastIndexOf(" ") + 1);
+            const type = tutorialGroup[0];
+            const attendanceGroup = groupInfo.slice(0, groupInfo.lastIndexOf(" ")) + tutorialGroup.slice(1).replace(/^0+/, "");
 
-            let type_name = "";
+            let typeName = "";
             if (type == "T") {
-                type_name = "Tutorial";
+                typeName = "Tutorial";
             } else if (type == "L") {
-                type_name = "Lecture";
+                typeName = "Lecture";
             } else if (type == "P") {
-                type_name = "Practical";
+                typeName = "Practical";
             } else {
-                type_name = "Unknown";
+                typeName = "Unknown";
                 functions.logger.error("unkown type", { courseInfo, groupInfo });
             }
 
-            let course_match = course_code.match(/^([A-Za-z]+)([\d]*)$/);
-            if (course_match.length !== 3) {
+            const courseMatch = courseCode.match(/^([A-Za-z]+)([\d]*)$/);
+            if (courseMatch.length !== 3) {
                 functions.logger.error("course_match.length is not 3", { courseInfo, groupInfo });
             }
-            let course_code_sp = course_match[1] + " " + course_match[2];
-            let expected_group = course_code_sp + " - " + attendance_group + " (" + type_name + ")";
+            const courseCodeSp = courseMatch[1] + " " + courseMatch[2];
+            const expectedGroup = courseCodeSp + " - " + attendanceGroup + " (" + typeName + ")";
 
-            return { course_code, type, attendance_group, tutorial_group, expected_group, type_name };
+            return { courseCode, type, attendanceGroup, tutorialGroup, expectedGroup, typeName };
         });
     return ret;
 };
@@ -206,36 +194,26 @@ const parse_getStudentDataReport = (data) => {
 const getStudentDataReport = async (id) => {
     if (!/^\d{1,2}-\d{4,5}$/.test(id)) throw "invalid id";
 
-    let retries = 0;
-    while (true) {
-        try {
-            let resp = await ntlm.get({
-                username: USERNAME,
-                password: PASSWORD,
-                url: "http://student.guc.edu.eg/External/Student/CourseGroup/StudentDataReport.aspx",
-                qs: { StudentAppNo: id },
-            });
+    return doRetries(async () => {
+        const resp = await ntlm.get({
+            username: USERNAME,
+            password: PASSWORD,
+            url: "http://student.guc.edu.eg/External/Student/CourseGroup/StudentDataReport.aspx",
+            qs: { StudentAppNo: id },
+        });
 
-            if (resp == undefined) {
-                throw "getStudentDataReport, result is undefined";
-            }
+        if (resp == undefined) throw "getStudentDataReport, result is undefined";
 
-            return parse_getStudentDataReport(resp);
-        } catch (error) {
-            functions.logger.warn(`getStudentDataReport, try: ${retries}, error: ${error.toString()}`);
-            retries += 1;
-            if (retries <= max_retries) continue;
-            throw error;
-        }
-    }
+        return parseGetStudentDataReport(resp);
+    }, maxDataReportRetries);
 };
 
 // get_student_scheudle called with get request or an option preflight request and returns the student schedule for the provided id
 exports.get_student_schedule = functions
     .region("europe-west1")
-    .runWith(runtimeOpts_get_student_schedule)
+    .runWith(runtimeOptsGetStudentSchedule)
     .https.onRequest(async (req, res) => {
-        let id = req.query.id;
+        const id = req.query.id;
         functions.logger.info(`incoming request from ${req.ip} with id ${id} and method ${req.method}`);
         // handle CORS
         res.set("Access-Control-Allow-Origin", "https://gucschedule.web.app");
@@ -251,37 +229,37 @@ exports.get_student_schedule = functions
             return;
         }
 
-        let student_data;
+        let studentData;
 
         try {
-            student_data = await getStudentDataReport(id);
+            studentData = await getStudentDataReport(id);
         } catch (e) {
             functions.logger.error(`error while getting Student Data Report ${e.toString()}`);
             res.send({ status: "error", error: e });
             return;
         }
-        let err = [];
-        let result = [];
+        const err = [];
+        const result = [];
 
-        let course_codes = student_data.map((e) => e.course_code);
-        let course_schedules = await getCoursesData(course_codes);
+        const courseCodes = studentData.map((e) => e.courseCode);
+        const courseSchedules = await getCoursesData(courseCodes);
 
-        for (let [course_code, course_info] of Object.entries(course_schedules)) if (!course_info.ok) err.push(course_info.error);
+        for (const [courseCode, courseInfo] of Object.entries(courseSchedules)) if (!courseInfo.ok) err.push(courseInfo.error);
 
-        for (let course of student_data) {
-            let course_info = course_schedules[course.course_code];
-            if (!course_info.ok) continue;
-            if (course_info.result.sched[course.expected_group] != undefined)
+        for (const course of studentData) {
+            const courseInfo = courseSchedules[course.courseCode];
+            if (!courseInfo.ok) continue;
+            if (courseInfo.result.sched[course.expectedGroup] != undefined)
                 result.push({
-                    course_code: course.course_code,
-                    tut_group: course.tutorial_group,
-                    type: course.type_name,
-                    sessions: course_info.result.sched[course.expected_group],
-                    course_name: course_info.result.course_name,
+                    course_code: course.courseCode,
+                    tut_group: course.tutorialGroup,
+                    type: course.typeName,
+                    sessions: courseInfo.result.sched[course.expectedGroup],
+                    course_name: courseInfo.result.course_name,
                 });
-            else err.push(course.course_code + `: group ${course.expected_group} not found`);
+            else err.push(course.courseCode + `: group ${course.expectedGroup} not found`);
         }
 
-        let ret = { status: "ok", error: err.join("\n"), data: result };
+        const ret = { status: "ok", error: err.join("\n"), data: result };
         res.send(ret);
     });
