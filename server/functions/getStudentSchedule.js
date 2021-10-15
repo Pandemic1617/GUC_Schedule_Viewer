@@ -6,7 +6,7 @@ const qs = require("qs");
 const ntlm = require("request-ntlm-promise");
 
 const { lazyVariable, currentTime, doRetries } = require("./utils");
-const { maxDataReportRetries, runtimeOptsGetStudentSchedule, maxCourseScheduleRetries } = require("./consts");
+const { maxDataReportRetries, runtimeOptsGetStudentSchedule, maxCourseScheduleRetries, courseDataMaxAge } = require("./consts");
 
 const USERNAME = functions.config().credentials.username;
 const PASSWORD = functions.config().credentials.password;
@@ -95,7 +95,7 @@ const downloadCourseSchedule = async (course) => {
 
     const courseSchedule = await downloadCourseScheduleHelper(course.id, viewState, eventValidation);
 
-    const data = { loaded: true, sched: courseSchedule };
+    const data = { loaded: true, sched: courseSchedule, lastUpdateTime: currentTime() };
 
     await admin
         .firestore()
@@ -124,8 +124,9 @@ const getCourseData = async (courseCode) => {
     if (!doc.exists) throw "course does not exist";
 
     const course = doc.data();
-
-    if (course.loaded) return course;
+    
+    let lastUpdateTime = course.lastUpdateTime || doc.updateTime.toMillis() || 0;
+    if (currentTime() - lastUpdateTime <= courseDataMaxAge && course.loaded) return course;
     return { ...course, ...(await downloadCourseSchedule(course)) };
 };
 
