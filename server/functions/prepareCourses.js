@@ -8,6 +8,7 @@ const { JSDOM } = require("jsdom");
 const qs = require("qs");
 const ntlm = require("request-ntlm-promise");
 const { prepareCoursesSecret } = require("./secret.js");
+const { runtimeOptsPerpareCourses } = require("./consts");
 
 const USERNAME = functions.config().credentials.username;
 const PASSWORD = functions.config().credentials.password;
@@ -48,15 +49,10 @@ const getCourses = async () => {
     }
 };
 
-const runtimeOpts_perpare_courses = {
-    timeoutSeconds: 540,
-    memory: "1GB",
-};
-
 // prepare_courses initializes the store by creating a collection for each course and saving constants needed for further requests
 exports.prepare_courses = functions
     .region("europe-west1")
-    .runWith(runtimeOpts_perpare_courses)
+    .runWith(runtimeOptsPerpareCourses)
     .https.onRequest(async (req, res) => {
         let key = req.query.key;
         if (key != prepareCoursesSecret) {

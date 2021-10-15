@@ -2,3 +2,5 @@ node_modules/
 credentials.js
 secret.js
 .runtimeconfig.json
+consts.js
+utils.js
