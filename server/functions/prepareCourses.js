@@ -24,7 +24,7 @@ const parse_getCourses = (data) => {
         return {
             id: v.id,
             course_name: v.value,
-            course_code: v.value.split(":")[0].replace(/\s/g, ""),
+            course_code: v.value.split(":")[0].replace(/\s/, ""),
         };
     });
 

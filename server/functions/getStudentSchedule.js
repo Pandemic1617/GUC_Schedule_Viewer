@@ -124,7 +124,7 @@ const getCourseData = async (courseCode) => {
     if (!doc.exists) throw "course does not exist";
 
     const course = doc.data();
-    
+
     let lastUpdateTime = course.lastUpdateTime || doc.updateTime.toMillis() || 0;
     if (currentTime() - lastUpdateTime <= courseDataMaxAge && course.loaded) return course;
     return { ...course, ...(await downloadCourseSchedule(course)) };
@@ -161,8 +161,9 @@ const parseGetStudentDataReport = (data) => {
             const groupInfo = v.children[1].textContent;
 
             const courseCombinedName = courseInfo.slice(courseInfo.indexOf(" - ") + 3).trim();
-            const courseCode = courseCombinedName.slice(0, courseCombinedName.indexOf(" "));
-            const courseLongName = courseCombinedName.slice(courseCombinedName.indexOf(" ") + 1);
+            const [courseCode, courseMatchAlpha, courseMatchNum] = courseCombinedName.match(/^\s*([A-Za-z]+)(\s*[\d]+)/);
+            const spIndex = courseCode.length;
+            const courseLongName = courseCombinedName.slice(spIndex + 1);
             const tutorialGroup = groupInfo.slice(groupInfo.lastIndexOf(" ") + 1);
             const type = tutorialGroup[0];
             const attendanceGroup = groupInfo.slice(0, groupInfo.lastIndexOf(" ")) + tutorialGroup.slice(1).replace(/^0+/, "");
@@ -179,11 +180,7 @@ const parseGetStudentDataReport = (data) => {
                 functions.logger.error("unkown type", { courseInfo, groupInfo });
             }
 
-            const courseMatch = courseCode.match(/^([A-Za-z]+)([\d]*)$/);
-            if (courseMatch.length !== 3) {
-                functions.logger.error("course_match.length is not 3", { courseInfo, groupInfo });
-            }
-            const courseCodeSp = courseMatch[1] + " " + courseMatch[2];
+            const courseCodeSp = courseMatchAlpha + " " + courseMatchNum;
             const expectedGroup = courseCodeSp + " - " + attendanceGroup + " (" + typeName + ")";
 
             return { courseCode, type, attendanceGroup, tutorialGroup, expectedGroup, typeName };
