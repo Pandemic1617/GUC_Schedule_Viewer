@@ -49,6 +49,44 @@ const getCourses = async () => {
     }
 };
 
+// parses the raw HTML to return the list of all courses and some constants
+const parse_getGroupSchedules = (data) => {
+    var doc = new JSDOM(data).window.document;
+
+    const event_validation = doc.querySelector("#__EVENTVALIDATION").value; // a constant needed for future requests
+    const view_state = doc.querySelector("#__VIEWSTATE").value; // a constant needed for future requests
+
+    const groupSchedules = Array.from(doc.querySelector("#scdTpLst").children)
+        .slice(1)
+        .reduce((acc, c) => {
+            const value = c.getAttribute("value"),
+                originalName = c.textContent,
+                name = originalName.slice(0, originalName.lastIndexOf(" "));
+            if (acc[name]) acc[name].push(value);
+            else acc[name] = [value];
+            return acc;
+        }, {});
+
+    return { groupSchedules, view_state, event_validation };
+};
+
+const getGroupSchedules = async () => {
+    try {
+        let resp = await ntlm.get({
+            username: USERNAME,
+            password: PASSWORD,
+            url: "http://student.guc.edu.eg/Web/Student/Schedule/GeneralGroupSchedule.aspx",
+        });
+
+        if (resp == undefined) {
+            throw "getCourses, result is undefined";
+        }
+        return parse_getGroupSchedules(resp);
+    } catch (error) {
+        throw error;
+    }
+};
+
 // prepare_courses initializes the store by creating a collection for each course and saving constants needed for further requests
 exports.prepare_courses = functions
     .region("europe-west1")
@@ -61,28 +99,49 @@ exports.prepare_courses = functions
         }
 
         const loaded = req.query.loaded == "true";
-        let result_courses = await getCourses();
-        let courses_list = result_courses.courses_list;
-        console.log("get courses done");
 
-        let writeResult = await admin
+        const resultCourses = await getCourses();
+        const coursesWriteResult = await admin
             .firestore()
             .collection("schedules")
             .doc("get_courses_info")
-            .set({ request_details: { event_validation: result_courses.event_validation, view_state: result_courses.view_state } }, { merge: true });
-        courses_promises = courses_list.map((course) => {
+            .set({ request_details: { event_validation: resultCourses.event_validation, view_state: resultCourses.view_state } }, { merge: true });
+
+        const resultGroupSchedules = await getGroupSchedules();
+        const groupSchedulesWriteResult = await admin
+            .firestore()
+            .collection("schedules")
+            .doc("get_group_schedules_info")
+            .set({ request_details: { event_validation: resultGroupSchedules.event_validation, view_state: resultGroupSchedules.view_state } }, { merge: true });
+
+        const coursesPromises = resultCourses.courses_list.map((course) => {
             let doc = admin
                 .firestore()
                 .collection("schedules")
                 .doc("student_schedules")
                 .collection("course_" + course.course_code)
                 .doc("info");
-            if (!loaded) doc = doc.set({ loaded, id: course.id, course_name: course.course_name, code: course.course_code }, { merge: true });
-            else doc = doc.set({ id: course.id, course_name: course.course_name, code: course.course_code }, { merge: true });
+
+            const base = { id: course.id, course_name: course.course_name, code: course.course_code };
+            if (!loaded) doc = doc.set({ loaded, ...base }, { merge: true });
+            else doc = doc.set(base, { merge: true });
             return doc;
         });
 
-        let done = await Promise.all(courses_promises);
+        const groupSchedulesPromises = Object.entries(resultGroupSchedules.groupSchedules).map(([group, values]) => {
+            let doc = admin
+                .firestore()
+                .collection("schedules")
+                .doc("student_schedules")
+                .collection("group_" + group)
+                .doc("info");
+            const base = { id: values, group_name: group };
+            if (!loaded) doc = doc.set({ loaded, ...base }, { merge: true });
+            else doc = doc.set(base, { merge: true });
+            return doc;
+        });
+
+        let done = await Promise.all([...coursesPromises, ...groupSchedulesPromises]);
 
         res.send("done :)");
     });
