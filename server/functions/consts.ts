@@ -1,6 +1,7 @@
 const maxDataReportRetries = 2;
 const maxCourseScheduleRetries = 2;
 const courseDataMaxAge = 1000 * 60 * 60 * 6; // in millis
+const groupScheduleMaxAge = 1000 * 60 * 60 * 6; // in millis
 
 const runtimeOptsGetStudentSchedule = {
     timeoutSeconds: 60,
@@ -13,4 +14,4 @@ const runtimeOptsPerpareCourses = {
     memory: "1GB",
     maxInstances: 1,
 };
-export { maxDataReportRetries, runtimeOptsGetStudentSchedule, maxCourseScheduleRetries, courseDataMaxAge, runtimeOptsPerpareCourses };
+export { maxDataReportRetries, runtimeOptsGetStudentSchedule, maxCourseScheduleRetries, courseDataMaxAge, runtimeOptsPerpareCourses, groupScheduleMaxAge };
