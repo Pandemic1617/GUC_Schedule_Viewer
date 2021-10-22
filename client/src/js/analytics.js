@@ -1,8 +1,8 @@
-import firebase from "firebase/app";
-import "firebase/analytics";
+import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
 import { firebaseConfig } from "./secret";
 
-const app = firebase.initializeApp(firebaseConfig);
-const analytics = app.analytics();
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
 
 export { analytics };
