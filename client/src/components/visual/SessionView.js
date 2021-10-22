@@ -20,9 +20,9 @@ class SessionView extends React.Component {
             <div className="SessionView">
                 <div className={["sessioncontainer", this.state.data.type].join(" ")}>
                     <div id="location">{this.state.data.location}</div>
-                    <div id="course"  onClick={this.handleClick}>{this.state.data.courseCode}</div>
+                    <div id="course" onClick={this.handleClick}>{this.state.data.courseCode}</div>
                     <div id="group">{this.state.data.tutorialGroup}</div>
-                    <div id="staff">{this.state.data.staff}</div>
+                    <div id="staff">{this.state.data.staff.join(', ')}</div>
                 </div>
             </div>
         );
