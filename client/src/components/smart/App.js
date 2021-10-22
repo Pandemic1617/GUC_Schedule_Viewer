@@ -18,6 +18,7 @@ class App extends React.Component {
             id: "",
         };
         this.getButton = React.createRef();
+        this.idInput = React.createRef();
 
         this.checkDisclaimer();
     }
@@ -35,7 +36,7 @@ class App extends React.Component {
 
     // called when the load schedule button is called
     onGetClick = async () => {
-        let id = this.state.id;
+        let id = this.updateID();
         let a = this.getButton.current;
         if (a.disabled === true) return;
         this.setState({ sched: [] });
@@ -81,17 +82,15 @@ class App extends React.Component {
     };
 
     // called each time the update field changes to update the state and load scheudle button color
-    updateID = (a) => {
-        let value = a.target.value;
+    updateID = () => {
+        let value = this.idInput.current.value;
         this.setState({ id: value });
         let button = this.getButton.current;
         if (/^\d{1,2}-\d{4,5}$/.test(value)) {
             button.setAttribute("ready", "");
         } else button.removeAttribute("ready");
+        return value;
     };
-
-    // shows an alert using sweet alert 2
-    // takes the title, message, additional sweet alert 2 parameters
 
     // triggers getScheudle when the enter key is pressed
     keyUpListener = (e) => {
@@ -103,7 +102,7 @@ class App extends React.Component {
         return (
             <div className="App">
                 <div id="name"> GUC Schedule Viewer</div>
-                <input id="id" type="text" placeholder="Enter GUC ID" onChange={this.updateID} onKeyUp={this.keyUpListener}></input>
+                <input id="id" type="text" placeholder="Enter GUC ID" onChange={this.updateID} onKeyUp={this.keyUpListener} ref={this.idInput}></input>
                 <br></br>
                 <button id="get" onClick={this.onGetClick} ref={this.getButton}>
                     Load Schedule
