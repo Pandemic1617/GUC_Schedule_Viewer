@@ -50,6 +50,4 @@ const showAlert = (type, info = "", obj = {}) => {
     });
 };
 
-const camelToSpace = (camelString) => [...camelString].map((c, i) => (i && c === toLower(c) ? c : " " + toUpper(c))).join('').trim();
-
-export { escapeHTML, parseScheudle, showAlert, camelToSpace };
+export { escapeHTML, parseScheudle, showAlert };

@@ -9,10 +9,19 @@ class SessionView extends React.Component {
     }
 
     handleClick = () => {
-        let data = this.state.data;
-        let info = Object.entries(data).map(([key, value]) => `<div class="SessionPopupKey"> ${escapeHTML(camelToSpace(key))}: </div><div class="SessionPopupValue"> ${escapeHTML(value)} </div>`);
+        const rawData = this.state.data;
+        const parsedData = [
+            ["Course Code", rawData.courseCode],
+            ["Course Name", rawData.courseName],
+            ["Type", rawData.type],
+            ["Session Group", rawData.tutorialGroup],
+            ["Location", rawData.location],
+            ["Staff", rawData.staff.join(", ")],
+        ]
+            .map(([key, value]) => `<div class="SessionPopupKey"> ${escapeHTML(key)}: </div><div class="SessionPopupValue"> ${escapeHTML(value)} </div>`) // escapeHTML on key not currently needed but should be kept to handle future changes
+            .join("\n");
 
-        showAlert(data.courseCode, info.join("\n"), { showConfirmButton: false, dontEscape: true });
+        showAlert(rawData.courseCode, parsedData, { showConfirmButton: false, dontEscape: true });
     };
 
     render() {
@@ -22,7 +31,7 @@ class SessionView extends React.Component {
                     <div id="location">{this.state.data.location}</div>
                     <div id="course" onClick={this.handleClick}>{this.state.data.courseCode}</div>
                     <div id="group">{this.state.data.tutorialGroup}</div>
-                    <div id="staff">{this.state.data.staff.join(', ')}</div>
+                    <div id="staff">{this.state.data.staff.join(", ")}</div>
                 </div>
             </div>
         );
