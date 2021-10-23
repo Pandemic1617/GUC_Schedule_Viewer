@@ -4,7 +4,7 @@ import axios from "axios";
 
 import Schedule from "../visual/Schedule";
 
-import { analytics } from "../../js/analytics.js";
+import { directLogEvent } from "../../js/analytics.js";
 
 import ChangeTheme from "./ChangeTheme.js";
 import { currentDisclaimerVersion, ApiUrl, disclaimerText } from "../../js/consts.js";
@@ -51,7 +51,7 @@ class App extends React.Component {
         console.debug("getSchedule is called with", id);
         if (!/^\d{1,2}-\d{4,5}$/.test(id)) {
             showAlert("Error", "invalid id provided");
-            analytics.logEvent("Load Scheudle", { type: "Error", result: "invalid id provided (internal)" });
+            directLogEvent("Load Scheudle", { type: "Error", result: "invalid id provided (internal)" });
             return;
         }
 
@@ -61,21 +61,21 @@ class App extends React.Component {
         } catch (e) {
             console.error("exception in getScheudle", e.toString());
             showAlert("Error while making request", e.toString());
-            analytics.logEvent("Load Scheudle", { type: "Error while making request", result: e.toString() });
+            directLogEvent("Load Scheudle", { type: "Error while making request", result: e.toString() });
             return;
         }
 
         if (a.data.status !== "ok") {
             showAlert(a.data.status, a.data.error);
-            analytics.logEvent("Load Scheudle", { type: a.data.status, result: a.data.error });
+            directLogEvent("Load Scheudle", { type: a.data.status, result: a.data.error });
             return;
         }
 
         if (a.data.error) {
             showAlert("Warning", a.data.error);
-            analytics.logEvent("Load Scheudle", { type: "Warning", result: a.data.error });
+            directLogEvent("Load Scheudle", { type: "Warning", result: a.data.error });
         } else {
-            analytics.logEvent("Load Scheudle", { type: "ok", result: "not error from request" });
+            directLogEvent("Load Scheudle", { type: "ok", result: "not error from request" });
         }
 
         this.setState({ sched: a.data.data });
