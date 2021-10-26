@@ -6,7 +6,7 @@ The server is implemented in JavaScript except for the utils and constants which
 ## Setup
 
 1. after opening a terminal in the server folder, run `npm i` to install the required dependencies
-2. run `firebase functions:config:set credentials.username="USERNAME" credentials password="PASSWORD"` and replace `USERNAME` and `PASSWORD` with you GUC username and password
+2. run `firebase functions:config:set credentials.username="USERNAME" credentials.password="PASSWORD"` and replace `USERNAME` and `PASSWORD` with you GUC username and password
 3. run `npm run setup-env` to save the environment variables in `.runtimeconfig.json`. This is required for the local development server to have access to the credentials
 4. create the `secret.js` file that contains the `prepare_courses` key
 5. run `npm run serve` to run the development server on localhost
