@@ -1,6 +1,7 @@
 import React from "react";
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
-import { initTheme,switchTheme } from "../../js/theme";
+import { initTheme, switchTheme } from "../../js/theme";
+import MySchedule from "./MySchedule";
 import Home from "./Home";
 
 initTheme();
@@ -32,6 +33,9 @@ const App = () => {
                     <Route path="/users">
                         <Users />
                     </Route> */}
+                    <Route path="/my_schedule">
+                        <MySchedule />
+                    </Route>
                     <Route path="/">
                         <Home />
                     </Route>

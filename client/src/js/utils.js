@@ -45,13 +45,18 @@ const MySwal = withReactContent(Swal);
 
 const showAlert = (type, info = "", obj = {}) => {
     console.debug("displayed alert");
+
+    const confirmButtonStyledText = obj.confirmButtonStyledText || "OK";
+    const cancelButtonStyledText = obj.cancelButtonStyledText || "Cancel";
     return MySwal.fire({
         title: '<span style="color:var(--color3)">' + escapeHTML(type) + "</span>",
         html: '<span style="color:var(--text-color);white-space: pre-wrap">' + (obj.dontEscape ? info : escapeHTML(info)) + "</span>",
         background: "var(--background)",
         confirmButtonColor: "var(--color3)",
-        confirmButtonText: '<span style="color:var(--background)">OK</span>',
-        ..._.omit(obj, "dontEscape"),
+        confirmButtonText: `<span style="color:var(--background)">${confirmButtonStyledText}</span>`,
+        cancelButtonColor: "var(--color3)",
+        cancelButtonText: `<span style="color:var(--background)">${cancelButtonStyledText}</span>`,
+        ..._.omit(obj, "dontEscape", "confirmButtonStyledText", "cancelButtonStyledText"),
     });
 };
 

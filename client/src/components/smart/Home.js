@@ -5,13 +5,15 @@ import Schedule from "../visual/Schedule";
 
 import { idRegex } from "../../js/consts";
 import { showAlert, checkDisclaimer, downloadSchedule } from "../../js/utils.js";
+import { saveSchedule } from "../../js/storedSchedule";
+import FloatingButton from "./FloatingButton";
 
 class Home extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
             sched: [],
-            id: "",
+            lastGucId: "",
         };
         this.getButton = React.createRef();
         this.idInput = React.createRef();
@@ -36,7 +38,7 @@ class Home extends React.Component {
         try {
             const { scheduleData, warning } = await downloadSchedule(id);
             if (showAlert.title) showAlert(warning.title, warning.description);
-            this.setState({ sched: scheduleData });
+            this.setState({ sched: scheduleData, lastGucId: id });
         } catch (error) {
             showAlert("Error", error.message);
         }
@@ -58,6 +60,15 @@ class Home extends React.Component {
         this.onGetClick();
     };
 
+    onSaveSchedule = () => {
+        const message = this.state.lastGucId.length > 0 ? `Are you sure you want to save ${this.state.lastGucId}'s schedule?` : "Are you sure you want to clear the saved schedule?";
+        showAlert("Save Schedule", message, { showCancelButton: true, confirmButtonStyledText: "Yes", cancelButtonStyledText: "No" }).then((result) => {
+            if (!result.isConfirmed) return;
+            saveSchedule(this.state.sched);
+            window.location.href = "/my_schedule";
+        });
+    };
+
     render() {
         return (
             <div className="App">
@@ -68,6 +79,7 @@ class Home extends React.Component {
                     Load Schedule
                 </button>
                 <Schedule schedule={this.state.sched} />
+                <FloatingButton onClick={this.onSaveSchedule} text="Save My Schedule" />
             </div>
         );
     }
