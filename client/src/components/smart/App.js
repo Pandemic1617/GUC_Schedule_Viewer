@@ -1,38 +1,40 @@
 import React from "react";
-import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
+import { BrowserRouter as Router, Switch, Route, NavLink } from "react-router-dom";
+import { slide as Menu } from "react-burger-menu";
+import "./App(menu).css";
 import { initTheme, switchTheme } from "../../js/theme";
 import MySchedule from "./MySchedule";
 import Home from "./Home";
 
 initTheme();
 
+const menuStyles = {
+    bmItemList: {
+        height: "auto",
+    },
+};
+
 const App = () => {
     return (
         <Router>
             <div>
-                {/* <nav>
-                    <ul>
-                        <li>
-                            <Link to="/">Home</Link>
-                        </li>
-                        <li>
-                            <Link to="/users">Users</Link>
-                        </li>
-                        <li>
-                            <div onClick={switchTheme}>switch theme</div>
-                        </li>
-                    </ul>
-                </nav> */}
+                <Menu styles={menuStyles}>
+                    <NavLink exact={true} activeClassName="link-active" to="/">
+                        <div className="menu-item" id="home-link">
+                            Home
+                        </div>
+                    </NavLink>
+                    <NavLink activeClassName="link-active" to="/my_schedule">
+                        <div className="menu-item" id="myScheudle-link">
+                            My Schedule
+                        </div>
+                    </NavLink>
+                    <div className="menu-item" id="changeTheme-button" onClick={switchTheme}>
+                        Change Theme
+                    </div>
+                </Menu>
 
-                {/* A <Switch> looks through its children <Route>s and
-            renders the first one that matches the current URL. */}
                 <Switch>
-                    {/* <Route path="/about">
-                        <About />
-                    </Route>
-                    <Route path="/users">
-                        <Users />
-                    </Route> */}
                     <Route path="/my_schedule">
                         <MySchedule />
                     </Route>
