@@ -68,21 +68,21 @@ const downloadSchedule = async (id) => {
     console.debug("getSchedule is called with", id);
     if (!idRegex.test(id)) {
         logEvent("Load Scheudle", { type: "Error", result: "invalid id provided (internal)" });
-        throw { title: "Error", description: "invalid id provided" };
+        throw new Error("invalid id provided");
     }
 
     const a = await axios.get(ApiUrl, { params: { id } }).catch((e) => {
         console.error("exception in getScheudle", e.toString());
         logEvent("Load Scheudle", { type: "Error while making request", result: e.toString() });
-        throw { title: "Error while making request", description: e.toString() };
+        throw new Error(e.toString());
     });
 
     if (a.data.status !== "ok") {
         logEvent("Load Scheudle", { type: a.data.status, result: a.data.error });
-        throw { title: a.data.status, description: a.data.error };
+        throw new Error(a.data.error);
     }
 
-    let warning = {title:'',description:''};
+    let warning = { title: "", description: "" };
     if (a.data.error) {
         logEvent("Load Scheudle", { type: "Warning", result: a.data.error });
         warning = { title: "Warning", description: a.data.error };

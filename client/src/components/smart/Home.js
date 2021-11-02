@@ -3,7 +3,6 @@ import React from "react";
 
 import Schedule from "../visual/Schedule";
 
-import ChangeTheme from "./ChangeTheme.js";
 import { idRegex } from "../../js/consts";
 import { showAlert, checkDisclaimer, downloadSchedule } from "../../js/utils.js";
 
@@ -39,7 +38,7 @@ class Home extends React.Component {
             if (showAlert.title) showAlert(warning.title, warning.description);
             this.setState({ sched: scheduleData });
         } catch (error) {
-            showAlert(error.title, error.description);
+            showAlert("Error", error.message);
         }
     };
 
@@ -69,7 +68,6 @@ class Home extends React.Component {
                     Load Schedule
                 </button>
                 <Schedule schedule={this.state.sched} />
-                <ChangeTheme />
             </div>
         );
     }

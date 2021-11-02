@@ -1,8 +1,11 @@
 import React from "react";
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
+import { initTheme,switchTheme } from "../../js/theme";
 import Home from "./Home";
 
-export default function App() {
+initTheme();
+
+const App = () => {
     return (
         <Router>
             <div>
@@ -13,6 +16,9 @@ export default function App() {
                         </li>
                         <li>
                             <Link to="/users">Users</Link>
+                        </li>
+                        <li>
+                            <div onClick={switchTheme}>switch theme</div>
                         </li>
                     </ul>
                 </nav> */}
@@ -33,4 +39,6 @@ export default function App() {
             </div>
         </Router>
     );
-}
+};
+
+export default App;
