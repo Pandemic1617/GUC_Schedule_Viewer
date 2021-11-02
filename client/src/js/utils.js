@@ -1,6 +1,11 @@
 import Swal from "sweetalert2";
+import axios from "axios";
+import { logEvent } from "./analytics.js";
 import withReactContent from "sweetalert2-react-content";
-import _, { toLower, toUpper } from "lodash";
+import { ApiUrl } from "./consts.js";
+import _ from "lodash";
+import { disclaimerText, currentDisclaimerVersion, idRegex } from "./consts";
+
 let escapeHTML = (text) => {
     let a = document.createElement("div");
     a.appendChild(document.createTextNode(text));
@@ -50,4 +55,42 @@ const showAlert = (type, info = "", obj = {}) => {
     });
 };
 
-export { escapeHTML, parseScheudle, showAlert };
+// checks if the disclaimer hasn't been accpeted it prompts the user to accept it
+const checkDisclaimer = () => {
+    if (localStorage.getItem("disclaimer_seen") >= currentDisclaimerVersion) return;
+
+    showAlert("Disclaimer", disclaimerText, { backdrop: true, allowOutsideClick: () => false, dontEscape: true }).then((e) => {
+        if (e.isConfirmed) localStorage.setItem("disclaimer_seen", currentDisclaimerVersion);
+    });
+};
+
+const downloadSchedule = async (id) => {
+    console.debug("getSchedule is called with", id);
+    if (!idRegex.test(id)) {
+        logEvent("Load Scheudle", { type: "Error", result: "invalid id provided (internal)" });
+        throw { title: "Error", description: "invalid id provided" };
+    }
+
+    const a = await axios.get(ApiUrl, { params: { id } }).catch((e) => {
+        console.error("exception in getScheudle", e.toString());
+        logEvent("Load Scheudle", { type: "Error while making request", result: e.toString() });
+        throw { title: "Error while making request", description: e.toString() };
+    });
+
+    if (a.data.status !== "ok") {
+        logEvent("Load Scheudle", { type: a.data.status, result: a.data.error });
+        throw { title: a.data.status, description: a.data.error };
+    }
+
+    let warning = {title:'',description:''};
+    if (a.data.error) {
+        logEvent("Load Scheudle", { type: "Warning", result: a.data.error });
+        warning = { title: "Warning", description: a.data.error };
+    } else {
+        logEvent("Load Scheudle", { type: "ok", result: "successful request" });
+    }
+
+    return { scheduleData: a.data.data, warning };
+};
+
+export { escapeHTML, parseScheudle, showAlert, checkDisclaimer, downloadSchedule };

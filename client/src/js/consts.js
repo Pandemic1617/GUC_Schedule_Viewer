@@ -9,4 +9,6 @@ const themes = ["theme-dark", "theme-light"];
 
 const days = ["Saturday", "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
 
-export { currentDisclaimerVersion, ApiUrl, disclaimerText, themes, days };
+const idRegex = /^\d{1,2}-\d{4,5}$/;
+
+export { currentDisclaimerVersion, ApiUrl, disclaimerText, themes, days,idRegex };
