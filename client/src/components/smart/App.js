@@ -3,9 +3,11 @@ import { BrowserRouter as Router, Switch, Route, NavLink } from "react-router-do
 import { slide as Menu } from "react-burger-menu";
 import "./App(menu).css";
 import { initTheme, switchTheme } from "../../js/theme";
+import { captureInstall } from "../../js/sw-manager";
 import MySchedule from "./MySchedule";
 import Home from "./Home";
 
+captureInstall();
 initTheme();
 
 const menuStyles = {

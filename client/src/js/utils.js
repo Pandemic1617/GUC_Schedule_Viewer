@@ -4,7 +4,7 @@ import { logEvent } from "./analytics.js";
 import withReactContent from "sweetalert2-react-content";
 import { ApiUrl } from "./consts.js";
 import _ from "lodash";
-import { disclaimerText, currentDisclaimerVersion, idRegex } from "./consts";
+import { disclaimerText, currentDisclaimerVersion, idRegex, appVersion } from "./consts";
 
 let escapeHTML = (text) => {
     let a = document.createElement("div");
@@ -78,7 +78,7 @@ const downloadSchedule = async (id) => {
 
     const a = await axios.get(ApiUrl, { params: { id } }).catch((e) => {
         console.error("exception in getScheudle", e.toString());
-        logEvent("Load Scheudle", { type: "Error while making request", result: e.toString() });
+        logEvent("Load Scheudle", { type: "Error while making request", result: e.toString(), appVersion });
         throw new Error(e.toString());
     });
 

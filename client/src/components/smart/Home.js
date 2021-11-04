@@ -5,6 +5,7 @@ import Schedule from "../visual/Schedule";
 
 import { idRegex } from "../../js/consts";
 import { showAlert, checkDisclaimer, downloadSchedule } from "../../js/utils.js";
+import { logEvent } from "../../js/analytics";
 import { saveSchedule } from "../../js/storedSchedule";
 import FloatingButton from "./FloatingButton";
 
@@ -19,6 +20,7 @@ class Home extends React.Component {
         this.idInput = React.createRef();
 
         checkDisclaimer();
+        logEvent("page_view", { page: "home" });
     }
 
     // called when the load schedule button is called
@@ -65,6 +67,7 @@ class Home extends React.Component {
         showAlert("Save Schedule", message, { showCancelButton: true, confirmButtonStyledText: "Yes", cancelButtonStyledText: "No" }).then((result) => {
             if (!result.isConfirmed) return;
             saveSchedule(this.state.sched);
+            logEvent("saved_schedule");
             window.location.href = "/my_schedule";
         });
     };
