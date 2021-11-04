@@ -8,6 +8,11 @@
       "sizes": "any",
       "type": "image/svg",
       "purpose": "any"
+    },
+    {
+      "src": "/icon2.png",
+      "sizes": "1536x1536",
+      "type": "image/png"
     }
   ],
   "start_url": "/my_schedule",
