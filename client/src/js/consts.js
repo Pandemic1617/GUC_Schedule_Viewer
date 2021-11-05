@@ -11,6 +11,6 @@ const days = ["Saturday", "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday"
 
 const idRegex = /^\d{1,2}-\d{4,5}$/;
 
-const appVersion = "0.1.0";
+const appVersion = "0.1.1";
 
 export { currentDisclaimerVersion, ApiUrl, disclaimerText, themes, days, idRegex, appVersion };
