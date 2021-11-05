@@ -1,9 +1,10 @@
 import { initializeApp } from "firebase/app";
-import { getAnalytics, logEvent } from "firebase/analytics";
+import { logEvent as rawLogEvent, initializeAnalytics } from "firebase/analytics";
 import { firebaseConfig } from "./secret";
+import { appVersion } from "./consts";
 
 const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
-const directLogEvent = (...inp) => logEvent(analytics, ...inp);
+const analytics = initializeAnalytics(app, { config: { connection: "online", appVersion } });
+const logEvent = (eventName, eventParams) => rawLogEvent(analytics, eventName, { ...eventParams });
 
-export { directLogEvent };
+export { logEvent };

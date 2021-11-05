@@ -10,18 +10,23 @@
     "firebase": "^9.2.0",
     "lodash": "^4.17.21",
     "react": "^17.0.2",
+    "react-burger-menu": "^3.0.6",
     "react-dom": "^17.0.2",
+    "react-router-dom": "^5.3.0",
     "react-scripts": "^4.0.3",
     "sweetalert2": "^11.1.2",
     "sweetalert2-react-content": "^4.1.1",
-    "web-vitals": "^1.0.1"
+    "web-vitals": "^1.0.1",
+    "workbox-build": "^6.3.0"
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "deploy": "firebase deploy --only hosting"
+    "deploy": "firebase deploy --only hosting",
+    "build-react": "react-scripts build",
+    "build-sw": "node ./src/sw-builder.js",
+    "build": "npm run build-react && npm run build-sw"
   },
   "eslintConfig": {
     "extends": [

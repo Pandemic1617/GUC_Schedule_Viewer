@@ -1,0 +1,18 @@
+.MySchedule {
+    text-align: center;
+}
+
+#title {
+    font-size: min(36px, 6.5vw);
+    font-weight: 200;
+    padding: 30px;
+    color: var(--color3);
+}
+
+#noSchedule {
+    /* font-size: min(36px, 6.5vw); */
+    /* font-weight: 200; */
+    padding: 20px max(30px, 10vw);
+    font-size: large;
+    color: var(--text-color);
+}
