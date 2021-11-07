@@ -30,7 +30,7 @@ const { captureInstall, promptInstall, listenToInstall } = (() => {
     };
 
     const promptInstall = (e) => {
-        if (!isInstallAvailable) throw "prompt not available";
+        if (!isInstallAvailable) throw new Error("prompt not available");
         isInstallAvailable = false;
         deferredPrompt.prompt();
         return deferredPrompt.userChoice;
