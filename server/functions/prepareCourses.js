@@ -4,7 +4,7 @@ const functions = require("firebase-functions");
 const admin = require("firebase-admin");
 
 const { JSDOM } = require("jsdom");
-
+const { timingSafeEqual } = require("crypto");
 const qs = require("qs");
 const ntlm = require("request-ntlm-promise");
 const { prepareCoursesSecret } = require("./secret.js");
@@ -93,7 +93,7 @@ exports.prepare_courses = functions
     .runWith(runtimeOptsPerpareCourses)
     .https.onRequest(async (req, res) => {
         let key = req.query.key;
-        if (key != prepareCoursesSecret) {
+        if (!timingSafeEqual(Buffer.from(key), Buffer.from(prepareCoursesSecret))) {
             res.status(500).send({ error: "whatcha doin" });
             return;
         }
