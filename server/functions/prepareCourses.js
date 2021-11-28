@@ -37,7 +37,7 @@ const getCourses = async () => {
         let resp = await ntlm.get({
             username: USERNAME,
             password: PASSWORD,
-            url: "http://student.guc.edu.eg/External/LSI/EDUMS/CSMS/SearchAcademicScheduled_001.aspx",
+            url: "https://student.guc.edu.eg/External/LSI/EDUMS/CSMS/SearchAcademicScheduled_001.aspx",
         });
 
         if (resp == undefined) {
@@ -75,7 +75,7 @@ const getGroupSchedules = async () => {
         let resp = await ntlm.get({
             username: USERNAME,
             password: PASSWORD,
-            url: "http://student.guc.edu.eg/Web/Student/Schedule/GeneralGroupSchedule.aspx",
+            url: "https://student.guc.edu.eg/Web/Student/Schedule/GeneralGroupSchedule.aspx",
         });
 
         if (resp == undefined) {
