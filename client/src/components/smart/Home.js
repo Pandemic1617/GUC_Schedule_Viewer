@@ -9,11 +9,16 @@ import { logEvent } from "../../js/analytics";
 import { saveSchedule } from "../../js/storedSchedule";
 import FloatingButton from "./FloatingButton";
 
+const sched = {
+    schedCategory: "",
+    slots: [],
+};
+
 class Home extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            sched: [],
+            sched,
             lastGucId: "",
         };
         this.getButton = React.createRef();
@@ -28,7 +33,7 @@ class Home extends React.Component {
         let id = this.updateID();
         let a = this.getButton.current;
         if (a.disabled === true) return;
-        this.setState({ sched: [] });
+        this.setState({ sched });
         a.disabled = true;
         this.getSchedule(id).then((e) => {
             a.disabled = false;

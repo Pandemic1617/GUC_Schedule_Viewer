@@ -31,7 +31,7 @@ class MySchedule extends React.Component {
         return (
             <div className="MySchedule">
                 <div id="title"> My Schedule </div>
-                {sched.length > 0 ? (
+                {sched.slots.length > 0 ? (
                     <Schedule schedule={sched} />
                 ) : (
                     <div id="noSchedule">

@@ -9,8 +9,15 @@ const themes = ["theme-dark", "theme-light"];
 
 const days = ["Saturday", "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
 
+const ordinals = ["1st", "2nd", "3rd", "4th", "5th"];
+
+const slotTimes = {
+    eng: ["8:15 - 9:45", "10:00 - 11:30", "11:45 - 13:15", "13:45 - 15:15", "15:45 - 17:15"],
+    law: ["8:15 - 9:45", "10:00 - 11:30", "12:00 - 13:30", "13:45 - 15:15", "15:45 - 17:15"],
+};
+
 const idRegex = /^\d{1,2}-\d{4,5}$/;
 
-const appVersion = "0.1.1";
+const appVersion = "0.1.2";
 
-export { currentDisclaimerVersion, ApiUrl, disclaimerText, themes, days, idRegex, appVersion };
+export { currentDisclaimerVersion, ApiUrl, disclaimerText, themes, days, idRegex, appVersion, ordinals, slotTimes };

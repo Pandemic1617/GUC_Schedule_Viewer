@@ -46,6 +46,6 @@
   },
   "devDependencies": {
     "react-scripts": "^4.0.3",
-    "workbox-build": "^6.3.0"
+    "workbox-build": "^6.6.0"
   }
 }

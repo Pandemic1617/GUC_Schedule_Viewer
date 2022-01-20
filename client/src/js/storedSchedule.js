@@ -6,7 +6,16 @@ const saveSchedule = (schedule) => {
 const retrieveSchedule = () => {
     const stringSchedule = localStorage.getItem("stored_schedule_0");
     console.log(stringSchedule);
-    return stringSchedule ? JSON.parse(stringSchedule) : [];
+    const ret = stringSchedule ? JSON.parse(stringSchedule) : [];
+
+    if (Array.isArray(ret)) {
+        return {
+            schedCategory: "",
+            slots: ret,
+        };
+    }
+
+    return ret;
 };
 
 export { saveSchedule, retrieveSchedule };

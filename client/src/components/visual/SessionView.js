@@ -16,7 +16,7 @@ class SessionView extends React.Component {
             ["Type", rawData.type],
             ["Session Group", rawData.tutorialGroup],
             ["Location", rawData.location],
-            ["Staff", rawData.staff.join(", ")],
+            ["Staff", rawData.staff.map((v) => (typeof v === "string" ? v : v.email ? `${v.name}(predicted email: ${v.email})` : v.name)).join(", ")],
         ]
             .map(([key, value]) => `<div class="SessionPopupKey"> ${escapeHTML(key)}: </div><div class="SessionPopupValue"> ${escapeHTML(value)} </div>`) // escapeHTML on key not currently needed but should be kept to handle future changes
             .join("\n");
@@ -31,7 +31,7 @@ class SessionView extends React.Component {
                     <div id="location">{this.state.data.location}</div>
                     <div id="course" onClick={this.handleClick}>{this.state.data.courseCode}</div>
                     <div id="group">{this.state.data.tutorialGroup}</div>
-                    <div id="staff">{this.state.data.staff.join(", ")}</div>
+                    <div id="staff">{this.state.data.staff.map((v) => (typeof v === "string" ? v : v.name)).join(", ")}</div>
                 </div>
             </div>
         );
